@@ -1,0 +1,32 @@
+{
+  "name": "devhub",
+  "version": "1.0.0",
+  "description": "Orbital 2025 - DevHub",
+  "main": "server.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "start" : "node backend/server.js",
+    "server" : "nodemon backend/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kaushal1101/DevHub.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kaushal1101/DevHub/issues"
+  },
+  "homepage": "https://github.com/Kaushal1101/DevHub#readme",
+  "dependencies": {
+    "express-async-handler": "^1.2.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.15.0",
+    "dotenv": "^16.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}

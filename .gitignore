@@ -3,8 +3,9 @@
 # Node dependencies
 node_modules/
 
+# COMMENTED OUT TEMPORARILY FOR TESTING PURPOSES
 # dotenv environment variables
-.env
+# .env
 
 # OS-specific
 .DS_Store
