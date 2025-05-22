@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: false }))
 // Get all CRUD functions from project Routes 
 app.use('/api/projects', require('./routes/projectRoutes'))
 
-app.use('/api/auth', require('./routes/authRoutes'))
+app.use('/api/auth', require('./routes/userRoutes'))
 
 app.use(errorHandler)
 

@@ -7,8 +7,8 @@
     "doc": "docs"
   },
   "scripts": {
-    "start" : "node backend/server.js",
-    "server" : "nodemon backend/server.js"
+    "start": "node backend/server.js",
+    "server": "nodemon backend/server.js"
   },
   "repository": {
     "type": "git",
@@ -21,10 +21,10 @@
   },
   "homepage": "https://github.com/Kaushal1101/DevHub#readme",
   "dependencies": {
-    "express-async-handler": "^1.2.0",
+    "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "mongoose": "^8.15.0",
-    "dotenv": "^16.5.0"
+    "express-async-handler": "^1.2.0",
+    "mongoose": "^8.15.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
