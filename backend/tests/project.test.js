@@ -24,14 +24,14 @@ beforeAll(async () => {
 
   // Create test user and token
   const user = await User.create({
-    full_name: 'Test User',
-    username: 'testuser',
-    email: 'test@example.com',
+    full_name: 'Gregory Smith',
+    username: 'gregash',
+    email: 'gregash@gmail',
     password: '$2a$10$RANDOMHASHEDPASSWORD', // Pre-hashed or use bcrypt
     role: 'student',
-    github: 'https://github.com/test',
-    bio: 'test bio',
-    techstack: ['node']
+    github: 'https://github.com/greg',
+    bio: 'My name is Greg. I like movies.',
+    techstack: ['nodejs', 'python']
   });
 
   userId = user._id;
@@ -51,21 +51,21 @@ describe('Project CRUD', () => {
       .post('/api/projects')
       .set('Authorization', `Bearer ${token}`)
       .send({
-        title: 'Project 1',
-        desc: 'A sample project',
+        title: 'DevHub',
+        desc: 'My orbital project',
         access_type: 'public',
         tech_stack: ['Node', 'MongoDB'],
-        tags: ['tag1'],
-        features_wanted: [{ title: 'Chat', desc: 'Realtime' }],
+        tags: ['platform', 'cool', 'MERN'],
+        features_wanted: [{ title: 'Chat', desc: 'Realtime' }, { title: 'Matching', desc: 'AI implemented'}],
         github_repo: {
-          owner: 'testuser',
+          owner: 'greg',
           repo: 'devhub',
-          url: 'https://github.com/testuser/devhub'
+          url: 'https://github.com/greg/devhub'
         }
       });
 
     expect(res.statusCode).toBe(201);
-    expect(res.body.title).toBe('Project 1');
+    expect(res.body.title).toBe('DevHub');
   });
 
   it('should fail to create project with missing fields', async () => {
@@ -75,7 +75,7 @@ describe('Project CRUD', () => {
       .send({ title: '' });
 
     expect(res.statusCode).toBe(400);
-    expect(res.body.message).toMatch(/Missing required project fields/i);
+    expect(res.body.message).toMatch(/Missing fields/i);
   });
 
   it('should return 404 for unknown project', async () => {
@@ -95,20 +95,20 @@ describe('Project CRUD', () => {
         .post('/api/projects')
         .set('Authorization', `Bearer ${token}`)
         .send({
-          title: 'Temp Project',
-          desc: 'Temporary project for testing',
-          access_type: 'private',
-          tech_stack: ['Express'],
-          tags: ['temp'],
-          features_wanted: [{ title: 'Collab', desc: 'Live collaboration' }],
+          title: 'Devhub',
+          desc: 'My orbital project',
+          access_type: 'public',
+          tech_stack: ['Node', 'MongoDB'],
+          tags: ['platform', 'cool', 'MERN'],
+          features_wanted: [{ title: 'Chat', desc: 'Realtime' }, { title: 'Matching', desc: 'AI implemented'}],
           github_repo: {
-            owner: 'testuser',
-            repo: 'temp-repo',
-            url: 'https://github.com/testuser/temp-repo'
+            owner: 'greg',
+            repo: 'devhub',
+            url: 'https://github.com/greg/devhub'
           }
         });
 
-      projectId = res.body._id;
+        projectId = res.body._id; 
     });
 
     it('should get project by ID', async () => {
@@ -124,10 +124,10 @@ describe('Project CRUD', () => {
       const res = await request(app)
         .put(`/api/projects/${projectId}`)
         .set('Authorization', `Bearer ${token}`)
-        .send({ title: 'Updated Project Title' });
+        .send({ title: 'New DevHub' });
 
       expect(res.statusCode).toBe(200);
-      expect(res.body.title).toBe('Updated Project Title');
+      expect(res.body.title).toBe('New DevHub');
     });
 
     it('should delete project', async () => {
@@ -141,14 +141,14 @@ describe('Project CRUD', () => {
 
     it('should not allow users who are not creators to update project', async () => {
       const otherUser = await User.create({
-        full_name: 'Other User',
-        username: 'otheruser',
-        email: 'other@example.com',
+        full_name: 'Aarav Rajesh',
+        username: 'rajeans',
+        email: 'rajeans@gmail.com',
         password: '$2a$10$RANDOMHASHEDPASSWORD',
         role: 'student',
-        github: 'https://github.com/other',
-        bio: 'other bio',
-        techstack: ['node']
+        github: 'https://github.com/rajeans',
+        bio: 'I am Aarav. I like to dance.',
+        techstack: ['node', 'C++']
       });
 
       const otherToken = jwt.sign({ id: otherUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
@@ -156,7 +156,7 @@ describe('Project CRUD', () => {
       const res = await request(app)
         .put(`/api/projects/${projectId}`)
         .set('Authorization', `Bearer ${otherToken}`)
-        .send({ title: 'Unauthorized Update' });
+        .send({ title: 'Not DevHub' });
 
       expect(res.statusCode).toBe(401);
       expect(res.body.message).toMatch(/not authorized/i);
@@ -164,14 +164,14 @@ describe('Project CRUD', () => {
 
     it('should not allow a different user to delete the project', async () => {
       const otherUser = await User.create({
-        full_name: 'Other User',
-        username: 'otheruser2',
-        email: 'other2@example.com',
+        full_name: 'Lionel Messi',
+        username: 'messi',
+        email: 'messi@gmail.com',
         password: '$2a$10$RANDOMHASHEDPASSWORD',
-        role: 'student',
-        github: 'https://github.com/other2',
-        bio: 'other bio',
-        techstack: ['node']
+        role: 'employee',
+        github: 'https://github.com/messi',
+        bio: 'I am Messi. I like football.',
+        techstack: ['node', 'C++']
       });
 
       const otherToken = jwt.sign({ id: otherUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
