@@ -47,7 +47,7 @@ const registerUser = asyncHandler(async(req, res) => {
             github: user.github,
             bio: user.bio,
             techstack: user.techstack,
-            token: generateToken(user,_id)
+            token: generateToken(user._id)
         })
     } else {
         res.status(400)
