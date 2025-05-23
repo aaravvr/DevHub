@@ -6,7 +6,7 @@ const Project = require('../models/projectModel')
 // @desc    Get projects
 // @route   GET /api/projects
 // @access  Private
-const getProjects = asyncHandler( async (req, res) => {
+const getAllProjects = asyncHandler( async (req, res) => {
   const projects = await Project.find()
 
   res.status(200).json({ projects });
@@ -30,7 +30,7 @@ const getProjectById = asyncHandler( async (req, res) => {
 // @route   GET /api/movies/user/:id
 // @access  Private
 const getUserProjects = asyncHandler( async (req, res) => {
-  const userProjects = await Project.find({ creator: req.params.id })
+  const userProjects = await Project.find({ creator: req.user._id })
 
   res.status(200).json(userProjects)
 })
@@ -109,7 +109,7 @@ const updateProjects = asyncHandler(async (req, res) => {
 
 
 module.exports = {
-  getProjects,
+  getAllProjects,
   createProject,
   deleteProjects,
   updateProjects,
