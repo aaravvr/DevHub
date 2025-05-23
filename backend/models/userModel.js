@@ -14,7 +14,7 @@ const userSchema = mongoose.Schema({
         trim: true,
         // Ensures username only 1 word without unecessary special characters
         match: [ /^[\w.-]+$/, 'Username must only contain letters, numbers, underscores (_), hyphens (-), or dots (.)'],
-        minlength: [6, "Must be atleast 6 characters long"]
+        minlength: [4, "Must be atleast 6 characters long"]
     },
     email: {
         type: String,

@@ -14,7 +14,7 @@ const projectSchema = mongoose.Schema({
         maxlength: [200, 'Max 200 characters']
     },
     access_type: {
-        type: 'String',
+        type: String,
         enum: ['public', 'private']
     },
     tech_stack: [String],

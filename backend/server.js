@@ -22,8 +22,13 @@ app.use(express.urlencoded({ extended: false }))
 // Get all CRUD functions from project Routes 
 app.use('/api/projects', require('./routes/projectRoutes'))
 
-app.use('/api/auth', require('./routes/authRoutes'))
+app.use('/api/users', require('./routes/userRoutes'))
+
+app.use('/api/auth', require('./routes/userRoutes'))
 
 app.use(errorHandler)
 
 app.listen(port, () => console.log(`server started on port ${port}`))
+
+// For testing purposes to export the entire express app
+module.exports = app
