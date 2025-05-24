@@ -1,6 +1,6 @@
-import axiosInstance from '../../../utils/axiosInstance'
+import axiosInstance from './../../api/axiosInstance'
 
-const API_URL = '/api/projects/'
+const API_URL = '/projects/'
 
 // Create a project
 const createProject = async (projectData) => {
@@ -11,6 +11,7 @@ const createProject = async (projectData) => {
 // Get projects
 const getAllProjects = async () => {
     const response = await axiosInstance.get(API_URL)
+    //console.log('HERE BLEDGE', response.data)
     return response.data
 }
 

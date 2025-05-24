@@ -12,6 +12,9 @@ import App from './App';
 
 import store from './app/store';
 
+// Imports all tailwind css for app
+import './index.css';
+
 // Creates DOM
 ReactDOM.createRoot(document.getElementById('root')).render(
   // Provider connects react and redux in the app

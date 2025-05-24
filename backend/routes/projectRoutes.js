@@ -5,7 +5,7 @@ const { protect } = require('../middleware/authMiddleware')
 
 
 // GET /api/projects
-router.get('/', protect, getAllProjects);
+router.get('/', getAllProjects);
 
 // POST /api/projects
 router.post('/', protect, createProject);

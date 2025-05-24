@@ -28,7 +28,7 @@ export const getAllProjects = createAsyncThunk('projects/getAll',
     async (_, thunkAPI) => {
         try {       
             // No token passed as anyone should be able to access (even without login)
-            return await projectService.getProjects()
+            return await projectService.getAllProjects()
         } catch (error) {
             const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
             return thunkAPI.rejectWithValue(message)

@@ -7,7 +7,7 @@ const Project = require('../models/projectModel')
 // @route   GET /api/projects
 // @access  Private
 const getAllProjects = asyncHandler( async (req, res) => {
-  const projects = await Project.find()
+  const projects = await Project.find().populate('creator', 'username full_name role')
 
   res.status(200).json({ projects });
 });
@@ -16,7 +16,7 @@ const getAllProjects = asyncHandler( async (req, res) => {
 // @route   GET /api/projects/:id
 // @access  Private
 const getProjectById = asyncHandler( async (req, res) => {
-  const project = await Project.findById(req.params.id)
+  const project = await Project.findById(req.params.id).populate('creator', 'username full_name role')
 
   if (!project) {
     res.status(404)
@@ -30,7 +30,7 @@ const getProjectById = asyncHandler( async (req, res) => {
 // @route   GET /api/movies/user/:id
 // @access  Private
 const getUserProjects = asyncHandler( async (req, res) => {
-  const userProjects = await Project.find({ creator: req.user._id })
+  const userProjects = await Project.find({ creator: req.user._id }).populate('creator', 'username full_name role')
 
   res.status(200).json(userProjects)
 })
@@ -67,7 +67,7 @@ const createProject = asyncHandler( async (req, res) => {
 // @route   DELETE /api/projects/:id
 // @access  Private
 const deleteProjects = asyncHandler(async (req, res) => {
-    const project = await Project.findById(req.params.id)
+    const project = await Project.findById(req.params.id).populate('creator', 'username full_name role')
 
     if (!project) {
       res.status(400)
@@ -89,7 +89,7 @@ const deleteProjects = asyncHandler(async (req, res) => {
 // @access  Private
 const updateProjects = asyncHandler(async (req, res) => {
 
-    const project = await Project.findById(req.params.id)
+    const project = await Project.findById(req.params.id).populate('creator', 'username full_name role')
     if (!project) {
       res.status(400)
       throw new Error('Movie not found')
@@ -102,7 +102,7 @@ const updateProjects = asyncHandler(async (req, res) => {
 
     const updatedProject = await Project.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
-    })
+    }).populate('creator', 'username full_name role')
 
     res.status(200).json(updatedProject)
 })
