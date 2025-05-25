@@ -19,7 +19,6 @@ function HomePage() {
   const {projects, isLoading, isError, message} = useSelector((state) => state.projects)
 
   
-
   useEffect(() => {
 
     dispatch(getAllProjects())

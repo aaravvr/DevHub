@@ -12,7 +12,7 @@ router.post('/', protect, createProject);
 
 // /api/projects/:id
 router.route('/:id')
-    .get(protect, getProjectById) // GET 
+    .get(getProjectById) // GET 
     .put(protect, updateProjects) // PUT
     .delete(protect, deleteProjects) // DELETE
 
