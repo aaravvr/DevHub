@@ -35,7 +35,7 @@ beforeAll(async () => {
   });
 
   userId = user._id;
-  token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+  token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '30h' });
 });
 
 afterAll(async () => {
@@ -151,7 +151,7 @@ describe('Project CRUD', () => {
         techstack: ['node', 'C++']
       });
 
-      const otherToken = jwt.sign({ id: otherUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      const otherToken = jwt.sign({ id: otherUser._id }, process.env.JWT_SECRET, { expiresIn: '30h' });
 
       const res = await request(app)
         .put(`/api/projects/${projectId}`)
@@ -174,7 +174,7 @@ describe('Project CRUD', () => {
         techstack: ['node', 'C++']
       });
 
-      const otherToken = jwt.sign({ id: otherUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      const otherToken = jwt.sign({ id: otherUser._id }, process.env.JWT_SECRET, { expiresIn: '30h' });
 
       const res = await request(app)
         .delete(`/api/projects/${projectId}`)

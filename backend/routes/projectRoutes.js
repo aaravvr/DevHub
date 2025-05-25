@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { getProjects, createProject, getProjectById, updateProjects, deleteProjects, getUserProjects } = require('../controller/projectController');
+const { getAllProjects, createProject, getProjectById, updateProjects, deleteProjects, getUserProjects } = require('../controller/projectController');
 const { protect } = require('../middleware/authMiddleware')
 
 
 // GET /api/projects
-router.get('/', protect, getProjects);
+router.get('/', getAllProjects);
 
 // POST /api/projects
 router.post('/', protect, createProject);
@@ -15,6 +15,9 @@ router.route('/:id')
     .get(protect, getProjectById) // GET 
     .put(protect, updateProjects) // PUT
     .delete(protect, deleteProjects) // DELETE
+
+// GET /api/projects/user
+router.get('/user', protect, getUserProjects) 
 
 
 module.exports = router;
