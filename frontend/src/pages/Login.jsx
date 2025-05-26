@@ -1,91 +1,80 @@
-import {useState, useEffect} from 'react'
+import { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import { FaSignInAlt } from 'react-icons/fa'
-import {useState, useEffect} from 'react'
-import {useSelector, useDispatch} from 'react-redux'
-import {useNavigate} from 'react-router-dom'
-import {toast} from 'react-toastify'
-import {login, reset} from '../features/auth/authSlice'
+import { login, reset } from '../features/auth/authSlice'
 import Spinner from '../components/Spinner'
 
-
-function Login() {
-  const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-  })
-
+export default function Login() {
+  const [formData, setFormData] = useState({ username: '', password: '' })
   const { username, password } = formData
 
   const navigate = useNavigate()
-    const dispatch = useDispatch()
-  
-    const {user, isLoading, isError, isSuccess, message} = useSelector(
-      (state) => state.auth)
+  const dispatch = useDispatch()
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.auth
+  )
 
   useEffect(() => {
-        if(isError) {
-          toast.error(message)
-        }
-  
-        if(isSuccess || user) {
-          navigate('/')
-        }
-  
-        dispatch(reset())
-  
-      }, [user, isError, isSuccess, message, navigate, dispatch])
+    if (isError) toast.error(message)
+    if (isSuccess || user) navigate('/')
+    dispatch(reset())
+  }, [user, isError, isSuccess, message, navigate, dispatch])
 
-  const onChange = (e) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }))
-  }
+  const onChange = (e) =>
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
 
   const onSubmit = (e) => {
     e.preventDefault()
-
-    const userData = {
-      username,
-      password,
-    }
-
-    dispatch(login(userData))
+    dispatch(login({ username, password }))
   }
 
-  if(isLoading) {
-    return <Spinner />
-  }
+  if (isLoading) return <Spinner />
 
   return (
-    <>
-    <section className='heading'>
-      <h1>
-        <FaSignInAlt /> Login
-      </h1>
-      <p>Login to DevHub</p>
+    <section className="min-h-screen flex items-center justify-center bg-base-200 px-4">
+      <div className="card w-full max-w-sm bg-base-100 shadow-lg rounded-lg">
+        <div className="card-body p-6">
+          <div className="text-center mb-6">
+            <FaSignInAlt className="text-4xl text-primary mx-auto mb-2" />
+            <h1 className="text-2xl font-semibold">Welcome Back</h1>
+            <p className="text-sm text-neutral mt-1">
+              Log in to your DevHub account
+            </p>
+          </div>
+
+          <form onSubmit={onSubmit} className="space-y-4">
+            <div className="form-control">
+              <input
+                type="text"
+                name="username"
+                value={username}
+                onChange={onChange}
+                placeholder="Username"
+                className="input input-bordered w-full"
+                required
+              />
+            </div>
+
+            <div className="form-control">
+              <input
+                type="password"
+                name="password"
+                value={password}
+                onChange={onChange}
+                placeholder="Password"
+                className="input input-bordered w-full"
+                required
+              />
+            </div>
+
+            <button type="submit" className="btn btn-primary w-full mt-4">
+              Login
+            </button>
+          </form>
+        </div>
+      </div>
     </section>
-
-    <section className='form'>
-      <form onSubmit={onSubmit}>
-        
-        <div className="form-group">
-          <input type='text' className='form-control' id='username' name='username' value={username} placeholder='Enter your username' onChange={onChange} required/>
-        </div>
-
-        <div className="form-group">
-          <input type='password' className='form-control' id='password' name='password' value={password} placeholder='Enter your password' onChange={onChange} required/>
-        </div>
-
-        <div className="form-group">
-          <button type="submit" className='btn btn-block'>
-            Submit
-          </button>
-        </div>
-      </form>
-    </section>
-    </>
   )
 }
-
-export default Login

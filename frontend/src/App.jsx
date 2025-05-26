@@ -1,17 +1,26 @@
-// Import routing components for client-side routes
-import { Routes, Route } from 'react-router-dom';
+// App.js
+import { Routes, Route } from 'react-router-dom'
 
+import Navbar from './components/Navbar'    // ← import your navbar
+import HomePage from './pages/HomePage'
+import CreateProject from './pages/CreateProject'
+import Register from './pages/Register'
+import Login from './pages/Login'
 
-// Import page components
-import HomePage from './pages/HomePage';
-import CreateProject from './pages/CreateProject';
+const App = () => {
+  return (
+    <>
+      <Navbar />     {/* ← always up top */}
+      <main className="pt-4">  {/* optional padding so content isn’t hidden under navbar */}
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/create" element={<CreateProject />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </main>
+    </>
+  )
+}
 
-// Navigation controller for all app routes
-const App = () => (
-  <Routes>
-    <Route path="/" element={<HomePage />} />
-    <Route path="/create" element={<CreateProject />} />
-  </Routes>
-);
-
-export default App;
+export default App
