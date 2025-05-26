@@ -15,10 +15,13 @@ function Navbar() {
   }
 
   return (
-    <header className="navbar bg-base-100 px-4 shadow-md">
+    <header className="navbar bg-base-200 shadow-md px-6 py-2">
       {/* left: logo/title */}
       <div className="navbar-start">
-        <Link to="/" className="btn btn-ghost normal-case text-xl">
+        <Link
+          to="/"
+          className="text-xl font-semibold text-indigo-400 hover:text-indigo-300 transition"
+        >
           DevHub
         </Link>
       </div>
@@ -28,18 +31,24 @@ function Navbar() {
         {user ? (
           <button
             onClick={onLogout}
-            className="btn btn-ghost gap-2"
+            className="btn btn-outline btn-sm text-white border-indigo-400 hover:bg-indigo-600 hover:border-indigo-600 gap-2"
           >
             <FaSignOutAlt />
             Logout
           </button>
         ) : (
           <>
-            <Link to="/login" className="btn btn-ghost gap-2">
+            <Link
+              to="/login"
+              className="btn btn-outline btn-sm text-white border-indigo-400 hover:bg-indigo-600 hover:border-indigo-600 gap-2"
+            >
               <FaSignInAlt />
               Login
             </Link>
-            <Link to="/register" className="btn btn-ghost gap-2">
+            <Link
+              to="/register"
+              className="btn btn-outline btn-sm text-white border-indigo-400 hover:bg-indigo-600 hover:border-indigo-600 gap-2"
+            >
               <FaUser />
               Register
             </Link>

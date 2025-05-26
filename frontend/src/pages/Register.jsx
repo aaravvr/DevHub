@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { FaUser } from 'react-icons/fa'
 import { register, reset } from '../features/auth/authSlice'
@@ -17,6 +17,7 @@ export default function Register() {
     github: '',
     techstack: '',
   })
+
   const {
     full_name,
     username,
@@ -35,10 +36,18 @@ export default function Register() {
   )
 
   useEffect(() => {
-    if (isError) toast.error(message)
-    if (isSuccess || user) navigate('/')
-    dispatch(reset())
-  }, [user, isError, isSuccess, message, navigate, dispatch])
+    if (isError && message) {
+      toast.error(message)
+      dispatch(reset())
+    }
+  }, [isError, message, dispatch])
+
+  useEffect(() => {
+    if (isSuccess || user) {
+      navigate('/')
+      dispatch(reset())
+    }
+  }, [isSuccess, user, navigate, dispatch])
 
   const onChange = (e) =>
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
@@ -48,125 +57,125 @@ export default function Register() {
     if (password !== password2) {
       toast.error('Passwords do not match')
     } else {
-      dispatch(register({ full_name, username, email, password, role, github, techstack }))
+      dispatch(
+        register({
+          full_name,
+          username,
+          email,
+          password,
+          role,
+          github,
+          techstack,
+        })
+      )
     }
   }
 
   if (isLoading) return <Spinner />
 
+  const inputStyle =
+    'w-full px-4 py-3 rounded-md bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition'
+
   return (
-    <section className="min-h-screen flex items-center justify-center bg-base-200 px-4">
-      <div className="card w-full max-w-md bg-base-100 shadow-lg rounded-lg">
-        <div className="card-body p-6">
-          <div className="text-center mb-6">
-            <FaUser className="text-4xl text-primary mx-auto mb-2" />
-            <h1 className="text-2xl font-semibold">Create Your Account</h1>
-            <p className="text-sm text-neutral mt-1">
+    <section className="min-h-screen bg-gradient-to-br from-indigo-900 to-slate-900 flex items-center justify-center px-4">
+      <div className="card w-full max-w-md bg-gray-50 text-slate-900 shadow-xl rounded-2xl border border-slate-200">
+        <div className="card-body p-8 space-y-5">
+          <div className="text-center">
+            <FaUser className="text-4xl text-indigo-600 mx-auto mb-2 bg-white p-2 rounded-full shadow-sm" />
+            <h1 className="text-2xl font-bold">Create Your Account</h1>
+            <p className="text-sm text-slate-500">
               Join DevHub and connect with developers worldwide.
             </p>
           </div>
 
           <form onSubmit={onSubmit} className="space-y-4">
-            <div className="form-control">
-              <input
-                name="full_name"
-                value={full_name}
-                onChange={onChange}
-                placeholder="Full Name"
-                className="input input-bordered w-full"
-                required
-              />
-            </div>
+            <input
+              name="full_name"
+              value={full_name}
+              onChange={onChange}
+              placeholder="Full Name"
+              className={inputStyle}
+              required
+            />
+            <input
+              name="username"
+              value={username}
+              onChange={onChange}
+              placeholder="Username"
+              className={inputStyle}
+              required
+            />
+            <input
+              type="email"
+              name="email"
+              value={email}
+              onChange={onChange}
+              placeholder="Email"
+              className={inputStyle}
+              required
+            />
+            <input
+              type="password"
+              name="password"
+              value={password}
+              onChange={onChange}
+              placeholder="Password"
+              className={inputStyle}
+              required
+            />
+            <input
+              type="password"
+              name="password2"
+              value={password2}
+              onChange={onChange}
+              placeholder="Confirm Password"
+              className={inputStyle}
+              required
+            />
+            <select
+              name="role"
+              value={role}
+              onChange={onChange}
+              className={inputStyle}
+              required
+            >
+              <option value="" disabled>
+                Select Your Role
+              </option>
+              <option>student</option>
+              <option>employee</option>
+              <option>company</option>
+            </select>
+            <input
+              type="url"
+              name="github"
+              value={github}
+              onChange={onChange}
+              placeholder="GitHub Profile (optional)"
+              className={inputStyle}
+            />
+            <input
+              name="techstack"
+              value={techstack}
+              onChange={onChange}
+              placeholder="Tech Stack (optional)"
+              className={inputStyle}
+            />
 
-            <div className="form-control">
-              <input
-                name="username"
-                value={username}
-                onChange={onChange}
-                placeholder="Username"
-                className="input input-bordered w-full"
-                required
-              />
-            </div>
-
-            <div className="form-control">
-              <input
-                type="email"
-                name="email"
-                value={email}
-                onChange={onChange}
-                placeholder="Email"
-                className="input input-bordered w-full"
-                required
-              />
-            </div>
-
-            <div className="form-control">
-              <input
-                type="password"
-                name="password"
-                value={password}
-                onChange={onChange}
-                placeholder="Password"
-                className="input input-bordered w-full"
-                required
-              />
-            </div>
-
-            <div className="form-control">
-              <input
-                type="password"
-                name="password2"
-                value={password2}
-                onChange={onChange}
-                placeholder="Confirm Password"
-                className="input input-bordered w-full"
-                required
-              />
-            </div>
-
-            <div className="form-control">
-              <select
-                name="role"
-                value={role}
-                onChange={onChange}
-                className="select select-bordered w-full"
-                required
-              >
-                <option value="" disabled>
-                  Select Your Role
-                </option>
-                <option>Student</option>
-                <option>Employee</option>
-                <option>Company</option>
-              </select>
-            </div>
-
-            <div className="form-control">
-              <input
-                type="url"
-                name="github"
-                value={github}
-                onChange={onChange}
-                placeholder="GitHub Profile (optional)"
-                className="input input-bordered w-full"
-              />
-            </div>
-
-            <div className="form-control">
-              <input
-                name="techstack"
-                value={techstack}
-                onChange={onChange}
-                placeholder="Tech Stack (optional)"
-                className="input input-bordered w-full"
-              />
-            </div>
-
-            <button type="submit" className="btn btn-primary w-full mt-4">
+            <button
+              type="submit"
+              className="btn w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold tracking-wide shadow-md transition"
+            >
               Register
             </button>
           </form>
+
+          <p className="text-center text-sm text-gray-500">
+            Already have an account?{' '}
+            <Link to="/login" className="text-indigo-600 font-medium hover:underline">
+              Login
+            </Link>
+          </p>
         </div>
       </div>
     </section>

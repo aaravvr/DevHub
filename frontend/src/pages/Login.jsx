@@ -17,10 +17,18 @@ export default function Login() {
   )
 
   useEffect(() => {
-    if (isError) toast.error(message)
-    if (isSuccess || user) navigate('/')
-    dispatch(reset())
-  }, [user, isError, isSuccess, message, navigate, dispatch])
+    if (isError && message) {
+      toast.error(message)
+      dispatch(reset())
+    }
+  }, [isError, message, dispatch])
+
+  useEffect(() => {
+    if (isSuccess || user) {
+      navigate('/')
+      dispatch(reset())
+    }
+  }, [isSuccess, user, navigate, dispatch])
 
   const onChange = (e) =>
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
@@ -33,46 +41,50 @@ export default function Login() {
   if (isLoading) return <Spinner />
 
   return (
-    <section className="min-h-screen flex items-center justify-center bg-base-200 px-4">
-      <div className="card w-full max-w-sm bg-base-100 shadow-lg rounded-lg">
-        <div className="card-body p-6">
-          <div className="text-center mb-6">
-            <FaSignInAlt className="text-4xl text-primary mx-auto mb-2" />
-            <h1 className="text-2xl font-semibold">Welcome Back</h1>
-            <p className="text-sm text-neutral mt-1">
-              Log in to your DevHub account
-            </p>
+    <section className="min-h-screen bg-gradient-to-br from-slate-900 to-indigo-900 flex items-center justify-center px-4">
+      <div className="card w-full max-w-sm bg-slate-100 text-slate-900 shadow-2xl rounded-2xl border border-slate-200">
+        <div className="card-body p-8 space-y-6">
+          <div className="text-center">
+            <FaSignInAlt className="text-5xl text-indigo-600 mx-auto mb-3 bg-white p-3 rounded-full shadow-sm" />
+            <h2 className="text-3xl font-bold">Welcome Back</h2>
+            <p className="text-sm text-slate-500">Log in to your DevHub account</p>
           </div>
 
           <form onSubmit={onSubmit} className="space-y-4">
-            <div className="form-control">
-              <input
-                type="text"
-                name="username"
-                value={username}
-                onChange={onChange}
-                placeholder="Username"
-                className="input input-bordered w-full"
-                required
-              />
-            </div>
-
-            <div className="form-control">
-              <input
-                type="password"
-                name="password"
-                value={password}
-                onChange={onChange}
-                placeholder="Password"
-                className="input input-bordered w-full"
-                required
-              />
-            </div>
-
-            <button type="submit" className="btn btn-primary w-full mt-4">
+            <input
+              type="text"
+              name="username"
+              value={username}
+              onChange={onChange}
+              placeholder="Username"
+              className="input input-bordered w-full bg-white"
+              autoComplete="username"
+              required
+            />
+            <input
+              type="password"
+              name="password"
+              value={password}
+              onChange={onChange}
+              placeholder="Password"
+              className="input input-bordered w-full bg-white"
+              autoComplete="current-password"
+              required
+            />
+            <button
+              type="submit"
+              className="btn w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold tracking-wide shadow-lg transition"
+            >
               Login
             </button>
           </form>
+
+          <p className="text-sm text-center text-slate-600 mt-2">
+            Don’t have an account?{' '}
+            <a href="/register" className="link text-indigo-600 font-semibold">
+              Register
+            </a>
+          </p>
         </div>
       </div>
     </section>
