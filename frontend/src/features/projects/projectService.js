@@ -5,6 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL + '/api/projects'
 // Create a project
 const createProject = async (projectData) => {
     const response = await axiosInstance.post(API_URL, projectData)
+    console.log(response.data)
     return response.data
 }
 
