@@ -45,7 +45,7 @@ describe('User + Project Integration Flow', () => {
         techstack: ['React', 'Node']
       });
 
-    expect(registerRes.statusCode).toBe(201);
+    expect(registerRes.statusCode).toBe(201); // Created
     token = registerRes.body.token;
     userId = registerRes.body._id;
 
@@ -111,11 +111,12 @@ describe('User + Project Integration Flow', () => {
       .post('/api/projects')
       .set('Authorization', `Bearer ${token}`)
       .send({
+        // Missing title field
         desc: 'Missing title',
         access_type: 'public',
         tech_stack: ['Express'],
         tags: ['invalid'],
-        features_wanted: [ { title: 'none' } ],
+        features_wanted: [{ title: 'none' }],
         github_repo: {
           url: 'https://github.com/test/missingtitle',
           repo: 'missingtitle',
@@ -133,6 +134,7 @@ describe('User + Project Integration Flow', () => {
       .post('/api/users')
       .send({
         email: 'missing@test.com'
+        // Missing full_name, username, password, role
       });
 
     expect(res.statusCode).toBe(400);
