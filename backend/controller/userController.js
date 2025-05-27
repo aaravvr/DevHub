@@ -6,19 +6,35 @@ const User = require('../models/userModel')
 // register new user
 // POST /api/users
 const registerUser = asyncHandler(async(req, res) => {
-    const { full_name, username, email, password, role, github, bio, techstack } = req.body
+    const { full_name, username, email, password, role, github, techstack } = req.body
 
-    if(!full_name || !username || !email || !password || !role || !github || !bio || !techstack) {
+    if(!full_name || !username || !email || !password || !role) {
         res.status(400)
         throw new Error('Please add all fields')
     }
 
-    //Check if user exists
-    const userExists = await User.findOne({email})
+    //Check if user with same email already exists
+    const emailExists = await User.findOne({ email })
 
-    if(userExists) {
+    if(emailExists) {
         res.status(400)
-        throw new Error('User already exists')
+        throw new Error('User already exists with this email')
+    }
+    //Check if user with same username already exists
+    const usernameExists = await User.findOne({ username})
+
+    if(usernameExists) {
+        res.status(400)
+        throw new Error('User already exists with this username')
+    }
+
+    //Check if user with same github profile already exists
+    if(github) {
+        const githubExists = await User.findOne({ github })
+        if(githubExists) {
+            res.status(400)
+            throw new Error('Github profile is already linked to another user')
+        }
     }
 
     //Hash password
@@ -33,7 +49,6 @@ const registerUser = asyncHandler(async(req, res) => {
         password: hashedPassword,
         role,
         github,
-        bio,
         techstack
     })
 
@@ -45,9 +60,8 @@ const registerUser = asyncHandler(async(req, res) => {
             email: user.email,
             role: user.role,
             github: user.github,
-            bio: user.bio,
             techstack: user.techstack,
-            token: generateToken(user._id)
+            token: generateToken(user._id),
         })
     } else {
         res.status(400)
@@ -81,14 +95,13 @@ const loginUser = asyncHandler(async(req, res) => {
 const getMe = asyncHandler(async (req, res) => {
     const {_id, full_name, username, email, role, github, bio, techstack} = await User.findById(req.user.id)
 
-    res.status(201).json({
+    res.status(200).json({
         id: _id,
         full_name,
         username,
         email,
         role,
         github,
-        bio,
         techstack,
     })
 })

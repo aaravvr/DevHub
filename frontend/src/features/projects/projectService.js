@@ -1,6 +1,6 @@
 import axiosInstance from './../../api/axiosInstance'
 
-const API_URL = '/projects/'
+const API_URL = import.meta.env.VITE_API_URL + '/api/projects'
 
 // Create a project
 const createProject = async (projectData) => {

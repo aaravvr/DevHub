@@ -1,11 +1,10 @@
-import {useEffect} from 'react'
-import {useNavigate} from 'react-router-dom'
-import {useSelector, useDispatch} from 'react-redux'
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
 
 import ProjectForm from '../components/ProjectForm'
 import ProjectCard from '../components/ProjectCard'
 import Spinner from '../components/Spinner'
-
 
 import { getAllProjects, reset } from '../features/projects/projectSlice'
 
@@ -16,36 +15,30 @@ function HomePage() {
   // Basically gets us the required states from the global state
   // ? just continues if auth exists, else doesn't look for user
   const user = useSelector((state) => state.auth?.user || null)
-  const {projects, isLoading, isError, message} = useSelector((state) => state.projects)
-
-  
+  const { projects, isLoading, isError, message } = useSelector((state) => state.projects)
 
   useEffect(() => {
-
     dispatch(getAllProjects())
 
     return () => {
       dispatch(reset())
     }
-
-  }, [dispatch]) 
+  }, [dispatch])
 
   // useEffect(() => {
   //   return () => {
-
   //     dispatch(reset())
   //   }
   // }, [dispatch])
 
-  // Added this error handling seperately due to infinite loop issue
+  // Added this error handling separately due to infinite loop issue
   // Ideally can be combined with useEffect above
   useEffect(() => {
     // Shows error to user
-    if(isError && <p className="error">{message}</p>) {
-      console.log(message)
+    if (isError && message) {
+      console.error('❌ Project fetch error:', message)
     }
   }, [isError, message])
-
 
   if (isLoading) {
     return <Spinner />
@@ -56,29 +49,30 @@ function HomePage() {
 
   return (
     <>
-      <section className="hero bg-base-200 py-8">
-        <div className="hero-content text-center flex-col">
-          <h1 className="text-3xl font-bold mb-2">DevHub</h1>
-          <p className="text-lg text-gray-600">Current Projects</p>
+      <section className="bg-gradient-to-br from-indigo-900 to-slate-900 text-white py-12 px-6">
+        <div className="max-w-3xl mx-auto text-center space-y-4">
+          <h1 className="text-4xl font-bold tracking-tight">🚀 DevHub</h1>
+          <p className="text-lg text-indigo-100">Discover and showcase your latest projects</p>
         </div>
       </section>
 
       <ProjectForm />
-      <section className="p-6">
-        { isLoading ? (
+
+      <section className="px-6 py-12 max-w-7xl mx-auto">
+        {isLoading ? (
           <Spinner />
         ) : projectList.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.projects.map((project) => (
-              <div key={project._id} className="card bg-base-100 shadow-md">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {projectList.map((project) => (
+              <div key={project._id} className="card bg-base-100 shadow-xl hover:shadow-2xl transition">
                 <div className="card-body">
-                  <ProjectCard project={project}/>
+                  <ProjectCard project={project} />
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <h3 className="text-xl text-gray-500 text-center mt-4">No Projects Currently.</h3>
+          <h3 className="text-xl text-gray-500 text-center mt-8">No Projects Currently.</h3>
         )}
       </section>
     </>
