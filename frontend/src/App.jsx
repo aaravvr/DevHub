@@ -7,6 +7,7 @@ import HomePage from './pages/HomePage'
 import CreateProject from './pages/CreateProject'
 import Register from './pages/Register'
 import Login from './pages/Login'
+import ViewProject from './pages/ViewProject'
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
           <Route path="/create" element={<CreateProject />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path='/projects/:id' element={<ViewProject />} />
         </Routes>
       </main>
 

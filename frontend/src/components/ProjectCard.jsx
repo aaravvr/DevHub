@@ -9,7 +9,7 @@ function ProjectCard({ project }) {
   const navigate = useNavigate()
 
   const handleClick = () => {
-    navigate('/' + project._id, { state: { project } })
+    navigate('/projects/' + project._id, { state: { project } })
   }
 
   // Essentially handles how the project is rendered
