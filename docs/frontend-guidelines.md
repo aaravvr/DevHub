@@ -2,10 +2,10 @@
 
 ## Pages
 - `/` -> HomePage (view all projects) – Kaushal
-- `/create` -> CreateProject – Aarav 
+- `/create` -> CreateProject – Kaushal
 - `/profile` -> Profile - Aarav
-- `/view` -> ViewProject - Kaushal
-- `/myprojects` -> UserProjects - Aarav
+- `/:id` -> ViewProject - Kaushal
+- `/myprojects` -> UserProjects - Kaushal
 
 ## Components
 - `ProjectForm.jsx` -> CreateProject - Aarav
