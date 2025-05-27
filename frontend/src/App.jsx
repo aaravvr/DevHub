@@ -1,18 +1,29 @@
-// Import routing components for client-side routes
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
-// Import page components
-import HomePage from './pages/HomePage';
-import CreateProject from './pages/CreateProject';
-import ViewProject from './pages/ViewProject';
+import Navbar from './components/Navbar'    
+import HomePage from './pages/HomePage'
+import CreateProject from './pages/CreateProject'
+import Register from './pages/Register'
+import Login from './pages/Login'
 
-// Navigation controller for all app routes
-const App = () => (
-  <Routes>
-    <Route path="/" element={<HomePage />} />
-    <Route path="/create" element={<CreateProject />} />
-    <Route path="/:id" element={<ViewProject />} />
-  </Routes>
-);
+const App = () => {
+  return (
+    <>
+      <Navbar />     
+      <main className="pt-4">  
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/create" element={<CreateProject />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </main>
 
-export default App;
+      <ToastContainer position="top-right" autoClose={3000} />
+    </>
+  )
+}
+
+export default App
