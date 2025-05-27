@@ -66,6 +66,18 @@ function ViewProject({ project }) {
         </div>
       </div>
 
+      {/* Tags */}
+      <div className="card bg-base-100 shadow-xl mb-6">
+        <div className="card-body">
+          <h3 className="card-title text-xl font-semibold">Tags</h3>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {projectToShow.tags.map((tag, index) => (
+              <span key={index} className="badge badge-primary">{tag}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Forgot to add collaborators in model. Removed for now */}
       {/* Collaborators */}
       {/* <div className="card bg-base-100 shadow-xl mb-6">

@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 
-import ProjectForm from '../components/ProjectForm'
+// import ProjectForm from '../components/ProjectForm'
 import ProjectCard from '../components/ProjectCard'
 import Spinner from '../components/Spinner'
 
@@ -56,7 +56,7 @@ function HomePage() {
         </div>
       </section>
 
-      <ProjectForm />
+      {/* <ProjectForm /> */}
 
       <section className="px-6 py-12 max-w-7xl mx-auto">
         {isLoading ? (
