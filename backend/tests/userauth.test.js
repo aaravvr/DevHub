@@ -1,37 +1,33 @@
-// User Authentication Test Suite
+// Test Cases for User Authentication 
 
-// Import required modules
-const request = require('supertest'); // For HTTP request simulation
-const app = require('../server'); // Express app
+const request = require('supertest'); 
+const app = require('../server'); 
 const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server'); // In-memory MongoDB for testing
+const { MongoMemoryServer } = require('mongodb-memory-server'); 
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
 let mongo;
 
-// Setup: Initialize in-memory MongoDB before running tests
 beforeAll(async () => {
   mongo = await MongoMemoryServer.create();
   if (mongoose.connection.readyState !== 0) await mongoose.disconnect();
   await mongoose.connect(mongo.getUri());
-  process.env.JWT_SECRET = 'test_secret'; // Set test JWT secret
+  process.env.JWT_SECRET = 'test_secret'; 
 });
 
-// Cleanup: Drop DB and close connections after all tests
 afterAll(async () => {
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
   await mongo.stop();
 });
 
-// Main Test Suite
 describe('User Auth Routes', () => {
   let userId;
   let token;
 
-  // Register a new user successfully
+  // Registering a new user successfully
   it('should register a user successfully', async () => {
     const res = await request(app)
       .post('/api/users')
@@ -46,8 +42,8 @@ describe('User Auth Routes', () => {
         techstack: ['Node.js', 'React']
       });
 
-    expect(res.statusCode).toBe(201); // Created
-    expect(res.body).toHaveProperty('token'); // Token is returned
+    expect(res.statusCode).toBe(201); 
+    expect(res.body).toHaveProperty('token'); 
     expect(res.body).toMatchObject({
       full_name: 'Test User',
       username: 'testuser',
@@ -60,30 +56,30 @@ describe('User Auth Routes', () => {
     token = res.body.token;
   });
 
-  // Prevent duplicate email registration
+  // Preventing duplicate email registration
   it('should not register user with duplicate email', async () => {
     const res = await request(app)
       .post('/api/users')
       .send({
         full_name: 'Duplicate Email',
         username: 'uniqueuser',
-        email: 'test@example.com', // already used
+        email: 'test@example.com', 
         password: 'anotherpassword',
         role: 'student',
         github: 'https://github.com/anothergithub'
       });
 
-    expect(res.statusCode).toBe(400); // Bad Request
-    expect(res.body.message).toMatch(/email/i); // Message mentions "email"
+    expect(res.statusCode).toBe(400); 
+    expect(res.body.message).toMatch(/email/i); 
   });
 
-  // Prevent duplicate username registration
+  // Preventing duplicate username registration
   it('should not register user with duplicate username', async () => {
     const res = await request(app)
       .post('/api/users')
       .send({
         full_name: 'Duplicate Username',
-        username: 'testuser', // already used
+        username: 'testuser', 
         email: 'unique@example.com',
         password: 'anotherpassword',
         role: 'student',
@@ -94,7 +90,7 @@ describe('User Auth Routes', () => {
     expect(res.body.message).toMatch(/username/i);
   });
 
-  // Prevent duplicate GitHub registration
+  // Preventing duplicate GitHub registration
   it('should not register user with duplicate github', async () => {
     const res = await request(app)
       .post('/api/users')
@@ -104,14 +100,14 @@ describe('User Auth Routes', () => {
         email: 'newuser@example.com',
         password: 'anotherpassword',
         role: 'student',
-        github: 'https://github.com/testuser' // already used
+        github: 'https://github.com/testuser' 
       });
 
     expect(res.statusCode).toBe(400);
     expect(res.body.message).toMatch(/github/i);
   });
 
-  // Login with correct credentials
+  // Logging in with correct credentials
   it('should login the user with correct credentials', async () => {
     const res = await request(app)
       .post('/api/users/login')
@@ -131,18 +127,18 @@ describe('User Auth Routes', () => {
       .post('/api/users/login')
       .send({
         username: 'testuser',
-        password: 'wrongpassword' // wrong password
+        password: 'wrongpassword' 
       });
 
-    expect(res.statusCode).toBe(401); // Unauthorized
+    expect(res.statusCode).toBe(401); 
     expect(res.body.message).toMatch(/invalid credentials/i);
   });
 
-  // Fetch current user profile using valid JWT
+  // Fetching current user profile using valid JWT
   it('should fetch user profile using token', async () => {
     const res = await request(app)
       .get('/api/users/me')
-      .set('Authorization', `Bearer ${token}`); // Pass JWT
+      .set('Authorization', `Bearer ${token}`); 
 
     expect(res.statusCode).toBe(200);
     expect(res.body.email).toBe('test@example.com');
@@ -150,17 +146,17 @@ describe('User Auth Routes', () => {
     expect(res.body.techstack).toContain('Node.js');
   });
 
-  // Fail profile fetch with invalid token
+  // Failing profile fetch with invalid token
   it('should reject profile fetch with invalid token', async () => {
     const res = await request(app)
       .get('/api/users/me')
-      .set('Authorization', 'Bearer invalidtoken'); // Malformed token
+      .set('Authorization', 'Bearer invalidtoken'); 
 
     expect(res.statusCode).toBe(401);
     expect(res.body.message).toMatch(/not authorized/i);
   });
 
-  // Fail registration with missing required fields
+  // Failing registration with missing required fields
   it('should not register with missing required fields', async () => {
     const res = await request(app)
       .post('/api/users')
@@ -170,6 +166,6 @@ describe('User Auth Routes', () => {
       });
 
     expect(res.statusCode).toBe(400);
-    expect(res.body.message).toMatch(/all fields/i); // Validation error
+    expect(res.body.message).toMatch(/all fields/i); 
   });
 });

@@ -45,7 +45,7 @@ export default function Login() {
       <div className="card w-full max-w-sm bg-slate-100 text-slate-900 shadow-2xl rounded-2xl border border-slate-200">
         <div className="card-body p-8 space-y-6">
           <div className="text-center">
-            <FaSignInAlt className="text-5xl text-indigo-600 mx-auto mb-3 bg-white p-3 rounded-full shadow-sm" />
+            <FaSignInAlt className="text-5xl text-indigo-500 mx-auto mb-3 bg-white p-3 rounded-full shadow-sm" />
             <h2 className="text-3xl font-bold">Welcome Back</h2>
             <p className="text-sm text-slate-500">Log in to your DevHub account</p>
           </div>
@@ -73,7 +73,7 @@ export default function Login() {
             />
             <button
               type="submit"
-              className="btn w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold tracking-wide shadow-lg transition"
+              className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold tracking-wide shadow-lg transition rounded-lg px-4 py-2 border-none"
             >
               Login
             </button>
@@ -81,7 +81,7 @@ export default function Login() {
 
           <p className="text-sm text-center text-slate-600 mt-2">
             Don’t have an account?{' '}
-            <a href="/register" className="link text-indigo-600 font-semibold">
+            <a href="/register" className="link text-indigo-500 font-semibold">
               Register
             </a>
           </p>

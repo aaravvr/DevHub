@@ -1,6 +1,5 @@
 // Testcases for Project Authentication
 
-// Import libraries and dependencies
 const request = require('supertest');
 const app = require('../server');
 const mongoose = require('mongoose');
@@ -46,7 +45,7 @@ afterAll(async () => {
 
 describe('Project CRUD', () => {
 
-  // Create a valid project
+  // Creating a project with valid data
   it('should create a project successfully', async () => {
     const res = await request(app)
       .post('/api/projects')
@@ -72,7 +71,7 @@ describe('Project CRUD', () => {
     expect(res.body.title).toBe('DevHub');
   });
 
-  // Attempt to create a project with missing required fields
+  // Creating a project with missing required fields
   it('should fail to create project with missing fields', async () => {
     const res = await request(app)
       .post('/api/projects')
@@ -83,7 +82,7 @@ describe('Project CRUD', () => {
     expect(res.body.message).toMatch(/missing fields/i);
   });
 
-  // Attempt to get a project with a fake/nonexistent ID
+  // Getting a project with a nonexistent ID
   it('should return 404 for unknown project', async () => {
     const fakeId = new mongoose.Types.ObjectId();
     const res = await request(app)
@@ -120,7 +119,7 @@ describe('Project CRUD', () => {
       projectId = res.body._id;
     });
 
-    // Retrieve the project by its ID
+    // Retrieving the project with its ID
     it('should get project by ID', async () => {
       const res = await request(app)
         .get(`/api/projects/${projectId}`)
@@ -130,7 +129,7 @@ describe('Project CRUD', () => {
       expect(res.body._id).toBe(projectId);
     });
 
-    // Update the project successfully
+    // Updating the project 
     it('should update project', async () => {
       const res = await request(app)
         .put(`/api/projects/${projectId}`)
@@ -141,7 +140,7 @@ describe('Project CRUD', () => {
       expect(res.body.title).toBe('New DevHub');
     });
 
-    // Delete the project
+    // Deleting the project
     it('should delete project', async () => {
       const res = await request(app)
         .delete(`/api/projects/${projectId}`)
@@ -151,7 +150,7 @@ describe('Project CRUD', () => {
       expect(res.body.message).toMatch(/deleted/i);
     });
 
-    // Prevent other users from updating the project
+    // Prevent other users from updating projects
     it('should not allow users who are not creators to update project', async () => {
       const otherUser = await User.create({
         full_name: 'Aarav Rajesh',
@@ -175,7 +174,7 @@ describe('Project CRUD', () => {
       expect(res.body.message).toMatch(/not authorized/i);
     });
 
-    // Prevent other users from deleting the project
+    // Preventing other users from deleting the project
     it('should not allow a different user to delete the project', async () => {
       const otherUser = await User.create({
         full_name: 'Lionel Messi',
