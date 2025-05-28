@@ -30,17 +30,28 @@ function Navbar() {
       <div className="navbar-end space-x-2">
         {user ? (
           <>
-          <Link
-            to='/create'
-            className="btn btn-success btn-sm text-white border-indigo-400 hover:bg-indigo-600 hover:border-indigo-600 gap-2"
-          >New Project</Link>
-          <button
-            onClick={onLogout}
-            className="btn btn-outline btn-sm text-white border-indigo-400 hover:bg-indigo-600 hover:border-indigo-600 gap-2"
-          >
-            <FaSignOutAlt />
-            Logout
-          </button>
+            <Link
+              to="/create"
+              className="btn btn-success btn-sm text-white border-indigo-400 hover:bg-indigo-600 hover:border-indigo-600 gap-2"
+            >
+              New Project
+            </Link>
+
+            <Link
+              to="/profile"
+              className="btn btn-outline btn-sm text-white border-indigo-400 hover:bg-indigo-600 hover:border-indigo-600 gap-2"
+            >
+              <FaUser />
+              Profile
+            </Link>
+
+            <button
+              onClick={onLogout}
+              className="btn btn-outline btn-sm text-white border-indigo-400 hover:bg-indigo-600 hover:border-indigo-600 gap-2"
+            >
+              <FaSignOutAlt />
+              Logout
+            </button>
           </>
         ) : (
           <>

@@ -8,6 +8,7 @@ import CreateProject from './pages/CreateProject'
 import Register from './pages/Register'
 import Login from './pages/Login'
 import ViewProject from './pages/ViewProject'
+import Profile from './pages/Profile'
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path='/projects/:id' element={<ViewProject />} />
           <Route path='/create' element={<CreateProject />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </main>
 
