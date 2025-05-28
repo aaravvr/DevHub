@@ -1,6 +1,5 @@
 // Testcases for user & project flow
 
-// Import libraries and dependencies
 const request = require('supertest');
 const app = require('../server');
 const mongoose = require('mongoose');
@@ -10,7 +9,6 @@ const jwt = require('jsonwebtoken');
 
 let mongo;
 
-// Setup in-memory MongoDB and environment variables
 beforeAll(async () => {
   mongo = await MongoMemoryServer.create();
   if (mongoose.connection.readyState !== 0) await mongoose.disconnect();
@@ -18,20 +16,18 @@ beforeAll(async () => {
   process.env.JWT_SECRET = 'test_secret';
 });
 
-// Cleanup after all tests
 afterAll(async () => {
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
   await mongo.stop();
 });
 
-// Integration flow tests for user and project endpoints
 describe('User + Project Integration Flow', () => {
   let token, userId, projectId;
 
-  // Register a user and create a project using their token
+  // Registering a user and creating a project using their token
   it('should register user and create a project', async () => {
-    // Register a new user
+    // Registering a new user
     const registerRes = await request(app)
       .post('/api/users')
       .send({
@@ -45,11 +41,10 @@ describe('User + Project Integration Flow', () => {
         techstack: ['React', 'Node']
       });
 
-    expect(registerRes.statusCode).toBe(201);
-    token = registerRes.body.token;
+    expect(registerRes.statusCode).toBe(201); 
     userId = registerRes.body._id;
 
-    // Create a project as the authenticated user
+    // Creating a project as the user
     const createRes = await request(app)
       .post('/api/projects')
       .set('Authorization', `Bearer ${token}`)
@@ -75,7 +70,7 @@ describe('User + Project Integration Flow', () => {
     projectId = createRes.body._id;
   });
 
-  // Fetch the project using its ID and verify it's created by the same user
+  // Fetching the project using its ID and verifying that it's created by the same user
   it('should allow the creator to fetch their project by ID', async () => {
     const res = await request(app)
       .get(`/api/projects/${projectId}`)
@@ -86,7 +81,7 @@ describe('User + Project Integration Flow', () => {
     expect(res.body.creator._id).toBe(userId);
   });
 
-  // Edge case: Access project without token
+  // Accessng project without token
   it('should deny access to project if no token is provided', async () => {
     const res = await request(app)
       .get(`/api/projects/${projectId}`);
@@ -95,7 +90,7 @@ describe('User + Project Integration Flow', () => {
     expect(res.body.message).toMatch(/not authorized/i);
   });
 
-  // Edge case: Access project with invalid token
+  // Accessing project with invalid token
   it('should deny access to project with invalid token', async () => {
     const res = await request(app)
       .get(`/api/projects/${projectId}`)
@@ -105,17 +100,18 @@ describe('User + Project Integration Flow', () => {
     expect(res.body.message).toMatch(/not authorized/i);
   });
 
-  // Edge case: Try to create project with missing required field
+  // Trying to create project with missing required field
   it('should fail to create project with missing title', async () => {
     const res = await request(app)
       .post('/api/projects')
       .set('Authorization', `Bearer ${token}`)
       .send({
+        // Missing title field
         desc: 'Missing title',
         access_type: 'public',
         tech_stack: ['Express'],
         tags: ['invalid'],
-        features_wanted: [ { title: 'none' } ],
+        features_wanted: [{ title: 'none' }],
         github_repo: {
           url: 'https://github.com/test/missingtitle',
           repo: 'missingtitle',
@@ -127,19 +123,20 @@ describe('User + Project Integration Flow', () => {
     expect(res.body.message).toMatch(/missing fields/i);
   });
 
-  // Edge case: Attempt to register with missing fields
+  // Registering with missing fields
   it('should fail to register with missing required fields', async () => {
     const res = await request(app)
       .post('/api/users')
       .send({
         email: 'missing@test.com'
+        // Missing full_name, username, password, role
       });
 
     expect(res.statusCode).toBe(400);
     expect(res.body.message).toMatch(/all fields/i);
   });
 
-  // Edge case: Attempt to login with incorrect username
+  // Logging in with incorrect username
   it('should fail login with invalid username', async () => {
     const res = await request(app)
       .post('/api/users/login')

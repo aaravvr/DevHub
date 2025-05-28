@@ -1,19 +1,14 @@
 // Testcases for Project Authentication
 
-// Import testing library and server
 const request = require('supertest');
 const app = require('../server');
 const mongoose = require('mongoose');
-
-// Import local memory mongoose to avoid testing on actual DB
 const { MongoMemoryServer } = require('mongodb-memory-server');
-
-// Get required user, project models and jwt
 const User = require('../models/userModel');
 const Project = require('../models/projectModel');
 const jwt = require('jsonwebtoken');
 
-process.env.JWT_SECRET = 'test_secret'
+process.env.JWT_SECRET = 'test_secret';
 
 let mongo, token, userId;
 
@@ -26,12 +21,12 @@ beforeAll(async () => {
 
   await mongoose.connect(mongo.getUri());
 
-  // Create test user and token
+  // Create a test user
   const user = await User.create({
     full_name: 'Gregory Smith',
     username: 'gregash',
     email: 'gregash@gmail',
-    password: '$2a$10$RANDOMHASHEDPASSWORD', // Pre-hashed or use bcrypt
+    password: '$2a$10$RANDOMHASHEDPASSWORD', // Pre-hashed dummy password
     role: 'student',
     github: 'https://github.com/greg',
     bio: 'My name is Greg. I like movies.',
@@ -50,6 +45,7 @@ afterAll(async () => {
 
 describe('Project CRUD', () => {
 
+  // Creating a project with valid data
   it('should create a project successfully', async () => {
     const res = await request(app)
       .post('/api/projects')
@@ -60,7 +56,10 @@ describe('Project CRUD', () => {
         access_type: 'public',
         tech_stack: ['Node', 'MongoDB'],
         tags: ['platform', 'cool', 'MERN'],
-        features_wanted: [{ title: 'Chat', desc: 'Realtime' }, { title: 'Matching', desc: 'AI implemented'}],
+        features_wanted: [
+          { title: 'Chat', desc: 'Realtime' },
+          { title: 'Matching', desc: 'AI implemented' }
+        ],
         github_repo: {
           owner: 'greg',
           repo: 'devhub',
@@ -72,6 +71,7 @@ describe('Project CRUD', () => {
     expect(res.body.title).toBe('DevHub');
   });
 
+  // Creating a project with missing required fields
   it('should fail to create project with missing fields', async () => {
     const res = await request(app)
       .post('/api/projects')
@@ -79,9 +79,10 @@ describe('Project CRUD', () => {
       .send({ title: '' });
 
     expect(res.statusCode).toBe(400);
-    expect(res.body.message).toMatch(/Missing fields/i);
+    expect(res.body.message).toMatch(/missing fields/i);
   });
 
+  // Getting a project with a nonexistent ID
   it('should return 404 for unknown project', async () => {
     const fakeId = new mongoose.Types.ObjectId();
     const res = await request(app)
@@ -104,7 +105,10 @@ describe('Project CRUD', () => {
           access_type: 'public',
           tech_stack: ['Node', 'MongoDB'],
           tags: ['platform', 'cool', 'MERN'],
-          features_wanted: [{ title: 'Chat', desc: 'Realtime' }, { title: 'Matching', desc: 'AI implemented'}],
+          features_wanted: [
+            { title: 'Chat', desc: 'Realtime' },
+            { title: 'Matching', desc: 'AI implemented' }
+          ],
           github_repo: {
             owner: 'greg',
             repo: 'devhub',
@@ -112,9 +116,10 @@ describe('Project CRUD', () => {
           }
         });
 
-        projectId = res.body._id; 
+      projectId = res.body._id;
     });
 
+    // Retrieving the project with its ID
     it('should get project by ID', async () => {
       const res = await request(app)
         .get(`/api/projects/${projectId}`)
@@ -124,6 +129,7 @@ describe('Project CRUD', () => {
       expect(res.body._id).toBe(projectId);
     });
 
+    // Updating the project 
     it('should update project', async () => {
       const res = await request(app)
         .put(`/api/projects/${projectId}`)
@@ -134,6 +140,7 @@ describe('Project CRUD', () => {
       expect(res.body.title).toBe('New DevHub');
     });
 
+    // Deleting the project
     it('should delete project', async () => {
       const res = await request(app)
         .delete(`/api/projects/${projectId}`)
@@ -143,6 +150,7 @@ describe('Project CRUD', () => {
       expect(res.body.message).toMatch(/deleted/i);
     });
 
+    // Prevent other users from updating projects
     it('should not allow users who are not creators to update project', async () => {
       const otherUser = await User.create({
         full_name: 'Aarav Rajesh',
@@ -166,6 +174,7 @@ describe('Project CRUD', () => {
       expect(res.body.message).toMatch(/not authorized/i);
     });
 
+    // Preventing other users from deleting the project
     it('should not allow a different user to delete the project', async () => {
       const otherUser = await User.create({
         full_name: 'Lionel Messi',
@@ -188,5 +197,4 @@ describe('Project CRUD', () => {
       expect(res.body.message).toMatch(/not authorized/i);
     });
   });
-
 });
