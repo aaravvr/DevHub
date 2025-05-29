@@ -19,17 +19,56 @@ export default function UserProfile() {
     fetchUser()
   }, [id])
 
-  if (!profile) return <p className="text-center mt-10 text-white">Loading user...</p>
+  if (!profile) {
+    return (
+      <div className="min-h-screen flex justify-center items-center bg-base-200 text-white">
+        <p>Loading user...</p>
+      </div>
+    )
+  }
+
+  const renderCard = (title, value, isLink = false) => (
+    <div className="card bg-base-100 shadow-xl mb-6">
+      <div className="card-body">
+        <h3 className="card-title text-xl font-semibold">{title}</h3>
+        {value ? (
+          isLink ? (
+            <a
+              href={value}
+              target="_blank"
+              rel="noreferrer"
+              className="text-indigo-400 hover:underline"
+            >
+              {value}
+            </a>
+          ) : (
+            <p className="text-gray-300">{value}</p>
+          )
+        ) : (
+          <p className="text-gray-500 italic">N/A</p>
+        )}
+      </div>
+    </div>
+  )
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-slate-900 to-indigo-900 text-white">
-      <div className="bg-white text-slate-900 p-8 rounded-xl shadow-xl max-w-md w-full">
-        <h2 className="text-xl font-bold text-center mb-4">{profile.full_name}</h2>
-        <p><strong>Username:</strong> {profile.username}</p>
-        <p><strong>Email:</strong> {profile.email}</p>
-        <p><strong>Role:</strong> {profile.role}</p>
-        <p><strong>GitHub:</strong> {profile.github || 'N/A'}</p>
-        <p><strong>Tech Stack:</strong> {profile.techstack || 'N/A'}</p>
+    <div className="min-h-screen bg-base-300 text-white py-10 px-6">
+      <div className="max-w-3xl mx-auto">
+        {/* Header Card */}
+        <div className="card bg-base-100 shadow-xl mb-8">
+          <div className="card-body text-center">
+            <h2 className="card-title text-3xl font-bold justify-center">
+              {profile.full_name}
+            </h2>
+          </div>
+        </div>
+
+        {/* Info Cards */}
+        {renderCard('Username', profile.username)}
+        {renderCard('Email', profile.email)}
+        {renderCard('Role', profile.role)}
+        {renderCard('GitHub', profile.github, true)}
+        {renderCard('Tech Stack', profile.techstack)}
       </div>
     </div>
   )
