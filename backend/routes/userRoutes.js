@@ -5,6 +5,7 @@ const {
     loginUser,
     getMe,
     updateMe,
+    getUserById,
 } = require('../controller/userController')
 
 // protect used to check for authentication
@@ -16,6 +17,6 @@ router.post('/login', loginUser)
 router.get('/me', protect, getMe)
 router.put('/me', protect, updateMe)
 router.get('/:id', protect, getUserProjects)
-
+router.get('/public/:id', getUserById) 
 
 module.exports = router;

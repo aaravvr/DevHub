@@ -9,6 +9,7 @@ import Register from './pages/Register'
 import Login from './pages/Login'
 import ViewProject from './pages/ViewProject'
 import Profile from './pages/Profile'
+import UserProfile from './pages/UserProfile'
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
           <Route path='/projects/:id' element={<ViewProject />} />
           <Route path='/create' element={<CreateProject />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/users/:id" element={<UserProfile />} />
         </Routes>
       </main>
 

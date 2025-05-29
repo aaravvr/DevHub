@@ -127,6 +127,19 @@ const updateMe = asyncHandler(async (req, res) => {
   });
 });
 
+//  Get public user data by ID
+// GET /api/users/public/:id
+const getUserById = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id).select('-password')
+
+  if (!user) {
+    res.status(404)
+    throw new Error('User not found')
+  }
+
+  res.status(200).json(user)
+})
+
 
 // Generate JWT
 const generateToken = (id) => {
@@ -139,4 +152,5 @@ module.exports = {
     loginUser,
     getMe,
     updateMe,
+    getUserById,
 }
