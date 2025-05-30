@@ -54,7 +54,6 @@ export default function UserProfile() {
   return (
     <div className="min-h-screen bg-base-300 text-white py-10 px-6">
       <div className="max-w-3xl mx-auto">
-        {/* Header Card */}
         <div className="card bg-base-100 shadow-xl mb-8">
           <div className="card-body text-center">
             <h2 className="card-title text-3xl font-bold justify-center">
@@ -63,7 +62,6 @@ export default function UserProfile() {
           </div>
         </div>
 
-        {/* Info Cards */}
         {renderCard('Username', profile.username)}
         {renderCard('Email', profile.email)}
         {renderCard('Role', profile.role)}

@@ -40,6 +40,12 @@ const updateProject = async (id, updatedData) => {
     return response.data
 }
 
+// Get my projects
+const getMyProjects = async () => {
+  const response = await axiosInstance.get('/api/projects/my')
+  return response.data
+}
+
 // Reset selected project
 const resetSelectedProject = () => {
   return null
@@ -53,7 +59,8 @@ const projectService = {
     getProjectById,
     getUserProjects,
     updateProject,
-    resetSelectedProject
+    resetSelectedProject,
+    getMyProjects,
 }
 
 export default projectService

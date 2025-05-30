@@ -11,6 +11,9 @@ import ViewProject from './pages/ViewProject'
 import EditProfile from './pages/EditProfile'
 import UserProfile from './pages/UserProfile'
 import MyProfile from './pages/MyProfile'
+import MyProjects from './pages/MyProjects'
+
+
 
 const App = () => {
   return (
@@ -27,6 +30,8 @@ const App = () => {
           <Route path="/profile/edit" element={<EditProfile />} />
           <Route path="/users/:id" element={<UserProfile />} />
           <Route path="/profile" element={<MyProfile />} />
+          <Route path="/my-projects" element={<MyProjects />} />
+
         </Routes>
       </main>
 

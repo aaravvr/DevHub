@@ -1,8 +1,9 @@
 import { useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 export default function MyProfile() {
   const { user } = useSelector((state) => state.auth)
+  const navigate = useNavigate()  
 
   if (!user) {
     return (
@@ -39,7 +40,6 @@ export default function MyProfile() {
   return (
     <div className="min-h-screen bg-base-300 text-white py-10 px-6">
       <div className="max-w-3xl mx-auto">
-        {/* Header with Edit button inside */}
         <div className="card bg-base-100 shadow-xl mb-8">
           <div className="card-body text-center">
             <h2 className="card-title text-3xl font-bold justify-center">Your Profile</h2>
@@ -50,10 +50,15 @@ export default function MyProfile() {
             >
               Edit Profile
             </Link>
+            <button
+              onClick={() => navigate('/my-projects')}
+              className="btn bg-indigo-500 hover:bg-indigo-600 text-white font-semibold tracking-wide shadow-lg transition rounded-lg px-4 py-2 w-full mt-2"
+            >
+              View My Projects
+            </button>
           </div>
         </div>
 
-        {/* Info Cards */}
         {renderCard('Full Name', user.full_name)}
         {renderCard('Username', user.username)}
         {renderCard('Email', user.email)}

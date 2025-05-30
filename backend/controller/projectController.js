@@ -107,6 +107,13 @@ const updateProjects = asyncHandler(async (req, res) => {
     res.status(200).json(updatedProject)
 })
 
+// @desc   Get my projects
+// @route  GET /api/projects/my-projects
+// @access Private
+const getProjectsByLoggedInUser = asyncHandler(async (req, res) => {
+  const projects = await Project.find({ creator: req.user._id }).populate('creator', 'username full_name role')
+  res.status(200).json(projects)
+})
 
 module.exports = {
   getAllProjects,
@@ -114,5 +121,6 @@ module.exports = {
   deleteProjects,
   updateProjects,
   getProjectById, 
-  getUserProjects
+  getUserProjects,
+  getProjectsByLoggedInUser
 };
