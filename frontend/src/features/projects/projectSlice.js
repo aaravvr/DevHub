@@ -202,6 +202,9 @@ export const projectSlice = createSlice({
                 state.isLoading = false
                 state.isSuccess = true
                 state.selectedProject = action.payload 
+                state.myProjects = state.myProjects.map((proj) =>
+                    proj._id === action.payload._id ? action.payload : proj
+                )
             })
             .addCase(updateProject.rejected, (state, action) => {
                 state.isLoading = false

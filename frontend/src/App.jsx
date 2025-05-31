@@ -12,6 +12,7 @@ import EditProfile from './pages/EditProfile'
 import UserProfile from './pages/UserProfile'
 import MyProfile from './pages/MyProfile'
 import MyProjects from './pages/MyProjects'
+import EditProject from './pages/EditProject'
 
 
 
@@ -31,6 +32,7 @@ const App = () => {
           <Route path="/users/:id" element={<UserProfile />} />
           <Route path="/profile" element={<MyProfile />} />
           <Route path="/my-projects" element={<MyProjects />} />
+          <Route path="/projects/:id/edit" element={<EditProject />} />
 
         </Routes>
       </main>

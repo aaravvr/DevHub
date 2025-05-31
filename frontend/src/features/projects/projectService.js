@@ -4,63 +4,55 @@ const API_URL = import.meta.env.VITE_API_URL + '/api/projects'
 
 // Create a project
 const createProject = async (projectData) => {
-    const response = await axiosInstance.post(API_URL, projectData)
-    console.log(response.data)
-    return response.data
+  const response = await axiosInstance.post(API_URL, projectData)
+  return response.data
 }
 
-// Get projects
+// Get all projects
 const getAllProjects = async () => {
-    const response = await axiosInstance.get(API_URL)
-    //console.log('HERE BLEDGE', response.data)
-    return response.data
+  const response = await axiosInstance.get(API_URL)
+  return response.data
 }
 
+// Get a single project by ID
 const getProjectById = async (id) => {
-  const response = await axiosInstance.get(API_URL + id)
+  const response = await axiosInstance.get(`${API_URL}/${id}`)
   return response.data
 }
 
-
-// Delete Project
+// Delete a project by ID
 const deleteProject = async (id) => {
-  const response = await axiosInstance.delete(API_URL + id)
+  const response = await axiosInstance.delete(`/api/projects/${id}`)
   return response.data
 }
 
-// Get user's projects
+
+// Get all projects created by a specific user
 const getUserProjects = async () => {
-    const response = await axiosInstance.get(API_URL + 'user')
-    return response.data
-}
-
-// Update project
-const updateProject = async (id, updatedData) => {
-    const response = await axiosInstance.put(API_URL + id, updatedData)
-    return response.data
-}
-
-// Get my projects
-const getMyProjects = async () => {
-  const response = await axiosInstance.get('/api/projects/my')
+  const response = await axiosInstance.get(`${API_URL}/user`)
   return response.data
 }
 
-// Reset selected project
-const resetSelectedProject = () => {
-  return null
+// Update a project by ID
+const updateProject = async (id, updatedData) => {
+  const response = await axiosInstance.put(`${API_URL}/${id}`, updatedData)
+  return response.data
 }
 
+// Get projects of currently logged in user
+const getMyProjects = async () => {
+  const response = await axiosInstance.get(`${API_URL}/my`)
+  return response.data
+}
 
 const projectService = {
-    createProject,
-    getAllProjects,
-    deleteProject,
-    getProjectById,
-    getUserProjects,
-    updateProject,
-    resetSelectedProject,
-    getMyProjects,
+  createProject,
+  getAllProjects,
+  deleteProject,
+  getProjectById,
+  getUserProjects,
+  updateProject,
+  getMyProjects,
 }
 
 export default projectService
