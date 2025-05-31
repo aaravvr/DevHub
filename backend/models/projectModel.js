@@ -64,7 +64,12 @@ const projectSchema = mongoose.Schema({
             required: true,
             match: /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+$/,
         }
-    }
+    },
+    // Added file tree to store tree + hashmap data structure of repository
+    fileTree: {
+        type: [mongoose.Schema.Types.Mixed],
+        default: []
+    },
 }, 
 {
     timestamps: true

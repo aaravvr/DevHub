@@ -35,13 +35,53 @@ const getUserProjects = asyncHandler( async (req, res) => {
   res.status(200).json(userProjects)
 })
 
+// Builds tree using flat raw tree structure
+const buildFileTree = (flatTree) => {
+  const root = [];
+  const pathMap = {};
+
+  // Iterate over each file/folder
+  flatTree.forEach(item => {
+    // Split each path into parts of folders
+    const parts = item.path.split('/');
+    let current = root;
+
+    parts.forEach((part, i) => {
+      // Recreate path to use as key for hashmap (pathmap)
+      const pathBuilder = parts.slice(0, i + 1).join('/');
+      
+      // Check if node exists using hashmap to get O(1) check
+      // If doesn't exist, create new node
+      if (!pathMap[pathBuilder]) {
+        const newNode = {
+          name: part,
+          path: pathBuilder,
+          type: (i === parts.length - 1) ? item.type : 'tree',
+          children: []
+        };
+        pathMap[pathBuilder] = newNode;
+
+        // Initialize root if undefined
+        if (i === 0) {
+          root.push(newNode);
+        } else {
+          const parentPath = parts.slice(0, i).join('/');
+          pathMap[parentPath].children.push(newNode);
+        }
+      }
+    });
+  });
+
+  return root;
+};
+
 // @desc    Create projects
 // @routes  POST /api/projects
 // @access  Private
 const createProject = asyncHandler( async (req, res) => {
     // Extract required fields
     const {title, desc, access_type, tech_stack, 
-        tags, features_wanted, github_repo} = req.body
+        tags, features_wanted, github_repo, fileTree} = req.body
 
     // If no request body, or text in body, throw error
     if (!title || !desc || !req.user || !github_repo || !access_type) {
@@ -57,7 +97,8 @@ const createProject = asyncHandler( async (req, res) => {
         tags, 
         features_wanted, 
         creator: req.user._id, 
-        github_repo 
+        github_repo,
+        fileTree: buildFileTree(fileTree)
     })
 
     res.status(201).json(project)
