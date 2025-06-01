@@ -125,7 +125,13 @@ function ViewProject({ project }) {
         <div className="card-body">
           <h2 className="card-title text-3xl font-bold">{projectToShow.title}</h2>
           <p className="text-sm text-gray-500">
-            Created by <span className="font-semibold">{projectToShow.creator.username}</span>
+            Created by{' '}
+            <a
+              href={`/users/${projectToShow.creator._id}`}
+              className="font-semibold text-indigo-500 hover:underline"
+            >
+              {projectToShow.creator.username}
+            </a>
           </p>
           <p className="text-white text-lg mt-4">{projectToShow.desc}</p>
         </div>

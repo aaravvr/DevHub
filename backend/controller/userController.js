@@ -13,14 +13,14 @@ const registerUser = asyncHandler(async(req, res) => {
         throw new Error('Please add all fields')
     }
 
-    //Check if user with same email already exists
+    // Check if user with same email already exists
     const emailExists = await User.findOne({ email })
 
     if(emailExists) {
         res.status(400)
         throw new Error('User already exists with this email')
     }
-    //Check if user with same username already exists
+    // Check if user with same username already exists
     const usernameExists = await User.findOne({ username})
 
     if(usernameExists) {
@@ -28,7 +28,7 @@ const registerUser = asyncHandler(async(req, res) => {
         throw new Error('User already exists with this username')
     }
 
-    //Check if user with same github profile already exists
+    // Check if user with same github profile already exists
     if(github) {
         const githubExists = await User.findOne({ github })
         if(githubExists) {
@@ -37,11 +37,11 @@ const registerUser = asyncHandler(async(req, res) => {
         }
     }
 
-    //Hash password
+    // Hash password
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(password, salt)
 
-    //Create user
+    // Create user
     const user = await User.create({
         full_name,
         username,
@@ -81,7 +81,11 @@ const loginUser = asyncHandler(async(req, res) => {
         res.json({
             _id: user.id,
             full_name: user.full_name,
+            username: user.username,
             email: user.email,
+            role: user.role,
+            github: user.github,
+            techstack: user.techstack,
             token: generateToken(user._id),
         })
     } else {
@@ -93,7 +97,7 @@ const loginUser = asyncHandler(async(req, res) => {
 // Get user data
 // GET /api/users/me
 const getMe = asyncHandler(async (req, res) => {
-    const {_id, full_name, username, email, role, github, bio, techstack} = await User.findById(req.user.id)
+    const {_id, full_name, username, email, role, github, techstack} = await User.findById(req.user.id)
 
     res.status(200).json({
         id: _id,
@@ -106,6 +110,37 @@ const getMe = asyncHandler(async (req, res) => {
     })
 })
 
+// Update user data
+// PUT /api/users/me
+const updateMe = asyncHandler(async (req, res) => {
+  const updates = req.body;
+  const user = await User.findByIdAndUpdate(req.user.id, updates, { new: true });
+
+  res.status(200).json({
+    id: user._id,
+    full_name: user.full_name,
+    username: user.username,
+    email: user.email,
+    role: user.role,
+    github: user.github,
+    techstack: user.techstack,
+  });
+});
+
+//  Get public user data by ID
+// GET /api/users/public/:id
+const getUserById = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id).select('-password')
+
+  if (!user) {
+    res.status(404)
+    throw new Error('User not found')
+  }
+
+  res.status(200).json(user)
+})
+
+
 // Generate JWT
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -116,4 +151,6 @@ module.exports = {
     registerUser,
     loginUser,
     getMe,
+    updateMe,
+    getUserById,
 }

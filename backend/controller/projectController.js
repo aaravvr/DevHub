@@ -116,9 +116,10 @@ const deleteProjects = asyncHandler(async (req, res) => {
     }
 
     // Only project creator can delete
-    if (project.creator.toString() !== req.user._id.toString()) {
+    if (project.creator._id.toString() !== req.user._id.toString()) {
       return res.status(401).json({ message: 'Not authorized' });
     }
+
 
     await project.deleteOne()
 
@@ -129,25 +130,31 @@ const deleteProjects = asyncHandler(async (req, res) => {
 // @route   PUT /api/projects/:id
 // @access  Private
 const updateProjects = asyncHandler(async (req, res) => {
+  const project = await Project.findById(req.params.id).populate('creator', 'username full_name role')
+  if (!project) {
+    res.status(400)
+    throw new Error('Project not found')
+  }
 
-    const project = await Project.findById(req.params.id).populate('creator', 'username full_name role')
-    if (!project) {
-      res.status(400)
-      throw new Error('Movie not found')
-    }
+  if (project.creator._id.toString() !== req.user._id.toString()) {
+    return res.status(401).json({ message: 'Not authorized' });
+  }
 
-    // Only project creator can update
-    if (project.creator.toString() !== req.user._id.toString()) {
-      return res.status(401).json({ message: 'Not authorized' });
-    }
+  const updatedProject = await Project.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  }).populate('creator', 'username full_name role')
 
-    const updatedProject = await Project.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-    }).populate('creator', 'username full_name role')
-
-    res.status(200).json(updatedProject)
+  res.status(200).json(updatedProject)
 })
 
+
+// @desc   Get my projects
+// @route  GET /api/projects/my-projects
+// @access Private
+const getProjectsByLoggedInUser = asyncHandler(async (req, res) => {
+  const projects = await Project.find({ creator: req.user._id }).populate('creator', 'username full_name role')
+  res.status(200).json(projects)
+})
 
 module.exports = {
   getAllProjects,
@@ -155,5 +162,6 @@ module.exports = {
   deleteProjects,
   updateProjects,
   getProjectById, 
-  getUserProjects
+  getUserProjects,
+  getProjectsByLoggedInUser
 };

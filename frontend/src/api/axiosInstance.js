@@ -1,12 +1,9 @@
-import axios from 'axios';
-// import store from '../app/store';
+import axios from 'axios'
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5001/api',
-});
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5001',
+})
 
-// Sets request header to token by default so we don't have to add 
-// it each time we send a request
 axiosInstance.interceptors.request.use(config => {
   const token = localStorage.getItem('token');
   // const token = store.getState().auth.user?.token;
@@ -14,4 +11,20 @@ axiosInstance.interceptors.request.use(config => {
   return config;
 });
 
-export default axiosInstance;
+/*
+=======
+
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers = config.headers || {}  
+    config.headers.Authorization = `Bearer ${token}`
+    //console.log("Token attached:", token)
+  } else {
+    //console.warn("No token found in localStorage")
+  }
+  return config
+})
+>>>>>>> main
+*/
+
+export default axiosInstance
