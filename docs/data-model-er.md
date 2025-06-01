@@ -9,7 +9,7 @@
 - email
 - password_hash
 - github_username
-- role (e.g., student, employee, admin)
+- role (e.g., Student, Developer, admin)
 - tech_stack (e.g., Python, Java, React)
 - bio
 - avatar_url
@@ -22,6 +22,7 @@
 - description
 - access_type (public, private)
 - github_repo
+- fileTree (sorted repository tree)
 - creator_id
 - collaborators (list of user ids)
 - tech_stack

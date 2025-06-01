@@ -95,9 +95,9 @@ export default function Profile() {
                 <option value="" disabled>
                   Select your role
                 </option>
-                <option value="student">Student</option>
-                <option value="employee">Employee</option>
-                <option value="company">Company</option>
+                <option value="Student">Student</option>
+                <option value="Developer">Developer</option>
+                <option value="Company">Company</option>
               </select>
             </div>
 

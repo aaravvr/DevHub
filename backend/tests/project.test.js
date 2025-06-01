@@ -27,7 +27,7 @@ beforeAll(async () => {
     username: 'gregash',
     email: 'gregash@gmail',
     password: '$2a$10$RANDOMHASHEDPASSWORD', // Pre-hashed dummy password
-    role: 'student',
+    role: 'Student',
     github: 'https://github.com/greg',
     bio: 'My name is Greg. I like movies.',
     techstack: ['nodejs', 'python']
@@ -157,7 +157,7 @@ describe('Project CRUD', () => {
         username: 'rajeans',
         email: 'rajeans@gmail.com',
         password: '$2a$10$RANDOMHASHEDPASSWORD',
-        role: 'student',
+        role: 'Student',
         github: 'https://github.com/rajeans',
         bio: 'I am Aarav. I like to dance.',
         techstack: ['node', 'C++']
@@ -181,7 +181,7 @@ describe('Project CRUD', () => {
         username: 'messi',
         email: 'messi@gmail.com',
         password: '$2a$10$RANDOMHASHEDPASSWORD',
-        role: 'employee',
+        role: 'Developer',
         github: 'https://github.com/messi',
         bio: 'I am Messi. I like football.',
         techstack: ['node', 'C++']

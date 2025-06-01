@@ -35,7 +35,7 @@ describe('User + Project Integration Flow', () => {
         username: 'devtest',
         email: 'dev@test.com',
         password: 'testpass123',
-        role: 'student',
+        role: 'Student',
         github: 'https://github.com/devtest',
         bio: 'I test DevHub.',
         techstack: ['React', 'Node']
