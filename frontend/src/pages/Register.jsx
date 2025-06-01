@@ -142,9 +142,9 @@ export default function Register() {
               <option value="" disabled>
                 Select Your Role
               </option>
-              <option>student</option>
-              <option>employee</option>
-              <option>company</option>
+              <option>Student</option>
+              <option>Developer</option>
+              <option>Company</option>
             </select>
             <input
               type="url"

@@ -68,7 +68,7 @@ function CreateProject() {
     }
   };
 
-  // Basically creates a new empty feature each time it's clicked
+  // Studentally creates a new empty feature each time it's clicked
   const addFeature = () => {
     setFormData({ ...formData, features_wanted: [...formData.features_wanted, { title: '', desc: '' }] });
   };

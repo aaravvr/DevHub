@@ -36,7 +36,7 @@ describe('User Auth Routes', () => {
         username: 'testuser',
         email: 'test@example.com',
         password: 'securepassword123',
-        role: 'student',
+        role: 'Student',
         github: 'https://github.com/testuser',
         bio: 'I am a test user.',
         techstack: ['Node.js', 'React']
@@ -48,7 +48,7 @@ describe('User Auth Routes', () => {
       full_name: 'Test User',
       username: 'testuser',
       email: 'test@example.com',
-      role: 'student',
+      role: 'Student',
       github: 'https://github.com/testuser'
     });
 
@@ -65,7 +65,7 @@ describe('User Auth Routes', () => {
         username: 'uniqueuser',
         email: 'test@example.com', 
         password: 'anotherpassword',
-        role: 'student',
+        role: 'Student',
         github: 'https://github.com/anothergithub'
       });
 
@@ -82,7 +82,7 @@ describe('User Auth Routes', () => {
         username: 'testuser', 
         email: 'unique@example.com',
         password: 'anotherpassword',
-        role: 'student',
+        role: 'Student',
         github: 'https://github.com/uniquegithub'
       });
 
@@ -99,7 +99,7 @@ describe('User Auth Routes', () => {
         username: 'newuser',
         email: 'newuser@example.com',
         password: 'anotherpassword',
-        role: 'student',
+        role: 'Student',
         github: 'https://github.com/testuser' 
       });
 

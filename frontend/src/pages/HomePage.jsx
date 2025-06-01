@@ -12,7 +12,7 @@ function HomePage() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  // Basically gets us the required states from the global state
+  // Studentally gets us the required states from the global state
   // ? just continues if auth exists, else doesn't look for user
   const user = useSelector((state) => state.auth?.user || null)
   const { projects, isLoading, isError, message } = useSelector((state) => state.projects)

@@ -33,7 +33,7 @@ Submit via `POST /api/projects` using `axiosInstance`
   "desc": "Platform for developer collaboration",
   "access_type": "public",
   "tech_stack": ["React", "Node.js"],
-  "tags": ["open-source", "student-developed"],
+  "tags": ["open-source", "Student-developed"],
   "features_wanted": [
     { "title": "Chat", "desc": "Live collaboration chat"}, 
     { "title": "Competitions", "desc": "Coding competitions with voting"}
