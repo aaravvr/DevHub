@@ -8,7 +8,8 @@ const initialState = {
     isError: false,
     isSuccess: false,
     isLoading: false,
-    message: ''
+    message: '',
+    myProjects: []
 }
 
 // Create project function
@@ -96,6 +97,18 @@ export const getUserProjects = createAsyncThunk(
       }
     }
   )
+
+// Get my projects
+export const getMyProjects = createAsyncThunk(
+    'projects/getMyProjects',
+    async (_, thunkAPI) => {
+        try {
+            return await projectService.getMyProjects()
+        } catch (err) {
+            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Error fetching projects')
+        }
+    }
+) 
 
 export const projectSlice = createSlice({
     name: 'project',
@@ -189,12 +202,18 @@ export const projectSlice = createSlice({
                 state.isLoading = false
                 state.isSuccess = true
                 state.selectedProject = action.payload 
+                state.myProjects = state.myProjects.map((proj) =>
+                    proj._id === action.payload._id ? action.payload : proj
+                )
             })
             .addCase(updateProject.rejected, (state, action) => {
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload
             })  
+            .addCase(getMyProjects.fulfilled, (state, action) => {
+                state.myProjects = action.payload
+            })
     }
 })
 

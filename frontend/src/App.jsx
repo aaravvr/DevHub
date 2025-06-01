@@ -8,6 +8,13 @@ import CreateProject from './pages/CreateProject'
 import Register from './pages/Register'
 import Login from './pages/Login'
 import ViewProject from './pages/ViewProject'
+import EditProfile from './pages/EditProfile'
+import UserProfile from './pages/UserProfile'
+import MyProfile from './pages/MyProfile'
+import MyProjects from './pages/MyProjects'
+import EditProject from './pages/EditProject'
+
+
 
 const App = () => {
   return (
@@ -21,6 +28,12 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path='/projects/:id' element={<ViewProject />} />
           <Route path='/create' element={<CreateProject />} />
+          <Route path="/profile/edit" element={<EditProfile />} />
+          <Route path="/users/:id" element={<UserProfile />} />
+          <Route path="/profile" element={<MyProfile />} />
+          <Route path="/my-projects" element={<MyProjects />} />
+          <Route path="/projects/:id/edit" element={<EditProject />} />
+
         </Routes>
       </main>
 
