@@ -2,9 +2,29 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 import { createProject } from '../features/projects/projectSlice';
 import { ToastContainer } from 'react-toastify';
+import axios from 'axios';
+
+const parseGithubUrl = (urlStr) => {
+  try {
+    const url = new URL(urlStr);
+    const [owner, repo] = url.pathname.slice(1).split('/');
+    if (!owner || !repo) return null;
+    return { owner, repo, url: urlStr };
+  } catch (err) {
+    return null;
+  }
+};
+
+// Fetches full github tree structure of repository inputted
+const fetchGitHubTree = async (owner, repo) => {
+  const { data: repoData } = await axios.get(`https://api.github.com/repos/${owner}/${repo}`);
+  const branch = repoData.default_branch;
+  const { data: treeData } = await axios.get(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`);
+  return treeData.tree.map(({ path, type }) => ({ path, type }));
+};
 
 function CreateProject() {
   const dispatch = useDispatch();
@@ -18,7 +38,8 @@ function CreateProject() {
     tech_stack: [],
     tags: [],
     features_wanted: [{ title: '', desc: '' }],
-    github_repo: { url: '' }
+    github_repo: { url: '' },
+    fileTree: []
   });
 
   // Seperated to allow users to input mutliple tags and tech stacks
@@ -27,19 +48,6 @@ function CreateProject() {
 
   const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  // Helper to parse github url into owner, repo, and url
-  // Need to split to pass in 3 elements to github_repo field
-  const parseGithubUrl = (url) => {
-    if (!url) return { owner: '', repo: '', url: '' };
-    // Splits url into parts, replace to ensure no trailing slash
-    const parts = url.trim().replace(/\//, '').split('/');
-    // Takes second last part as name
-    const owner = parts[parts.length - 2];
-    // Takes last part as repo name
-    const repo = parts[parts.length - 1];
-    return { owner, repo, url };
   };
 
 
@@ -89,7 +97,7 @@ function CreateProject() {
     setFormData({ ...formData, features_wanted: formData.features_wanted.filter((_, index) => index !== indexToRemove) });
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     if (!formData.title || !formData.desc || !formData.github_repo.url) {
       toast.error('Please fill in all required fields (Title, Description, GitHub URL)');
@@ -102,8 +110,21 @@ function CreateProject() {
     }
 
     const parsedRepo = parseGithubUrl(formData.github_repo.url);
-    // Only github_repo needs the parsed version since it's a bigger object with owner, repo, and url
-    dispatch(createProject({ ...formData, github_repo: parsedRepo, creator: user._id }));
+    if (!parsedRepo) {
+      toast.error('Invalid GitHub URL. Expected format: github.com/owner/repo');
+      return;
+    }
+
+    if (!user || !user._id) {
+      toast.error('User not authenticated.');
+      return;
+    }
+
+    // Send full fileTree to backend to preprocess
+    const fileTree = await fetchGitHubTree(parsedRepo.owner, parsedRepo.repo);
+    //console.log(fileTree)
+
+    dispatch(createProject({ ...formData, github_repo: parsedRepo, creator: user._id, fileTree: fileTree}));
     navigate('/');
   };
 
