@@ -1,6 +1,9 @@
 import { Routes, Route } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { logout, getMe } from './features/auth/authSlice'
 
 import Navbar from './components/Navbar'    
 import HomePage from './pages/HomePage'
@@ -39,7 +42,7 @@ const App = () => {
 
       <ToastContainer position="top-right" autoClose={3000} />
     </>
-  )
+  )  
 }
 
 export default App
