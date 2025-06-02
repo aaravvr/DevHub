@@ -66,7 +66,25 @@ export default function UserProfile() {
         {renderCard('Email', profile.email)}
         {renderCard('Role', profile.role)}
         {renderCard('GitHub', profile.github, true)}
-        {renderCard('Tech Stack', profile.techstack)}
+        <div className="card bg-base-100 shadow-xl mb-6">
+          <div className="card-body">
+            <h3 className="card-title text-xl font-semibold">Tech Stack</h3>
+            {Array.isArray(profile.techstack) && profile.techstack.length > 0 ? (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {profile.techstack.map((tech, index) => (
+                  <div
+                    key={index}
+                    className="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full shadow-md"
+                  >
+                    {tech}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500 italic">N/A</p>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )
