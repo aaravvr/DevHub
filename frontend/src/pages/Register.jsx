@@ -6,6 +6,7 @@ import { FaUser } from 'react-icons/fa'
 import { register, reset } from '../features/auth/authSlice'
 import Spinner from '../components/Spinner'
 
+
 export default function Register() {
   const [formData, setFormData] = useState({
     full_name: '',
@@ -15,8 +16,10 @@ export default function Register() {
     password2: '',
     role: '',
     github: '',
-    techstack: '',
+    techstack: [],
   })
+
+  const [techInput, setTechInput] = useState('');
 
   const {
     full_name,
@@ -49,8 +52,23 @@ export default function Register() {
     }
   }, [isSuccess, user, navigate, dispatch])
 
-  const onChange = (e) =>
+  const onChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+  }
+
+  const addTech = () => {
+    if (techInput.trim()) {
+      setFormData({ ...formData, techstack: [...formData.techstack, techInput.trim()] });
+      setTechInput('');
+    }
+  };
+
+  const removeTech = (indexToRemove) => {
+    setFormData({
+      ...formData,
+      techstack: formData.techstack.filter((_, index) => index !== indexToRemove),
+    });
+  };
 
   const onSubmit = (e) => {
     e.preventDefault()
@@ -154,13 +172,39 @@ export default function Register() {
               placeholder="GitHub Profile (optional)"
               className={inputStyle}
             />
-            <input
-              name="techstack"
-              value={techstack}
-              onChange={onChange}
-              placeholder="Tech Stack (optional)"
-              className={inputStyle}
-            />
+            <div>
+              <input
+                type="text"
+                value={techInput}
+                onChange={(e) => setTechInput(e.target.value)}
+                placeholder="Add Tech Stack"
+                className={inputStyle}
+              />
+              <button
+                type="button"
+                onClick={addTech}
+                className="mt-2 w-full bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-medium rounded-md px-4 py-2 transition"
+              >
+                Add Tech
+              </button>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {techstack.map((tech, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 text-sm"
+                  >
+                    {tech}
+                    <button
+                      type="button"
+                      onClick={() => removeTech(index)}
+                      className="ml-2 text-red-500 hover:text-red-700"
+                    >
+                      X
+                    </button>
+                  </span>
+                ))}
+              </div>
+            </div>
 
             <button
               type="submit"
