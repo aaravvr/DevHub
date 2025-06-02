@@ -70,6 +70,14 @@ const projectSchema = mongoose.Schema({
         type: [mongoose.Schema.Types.Mixed],
         default: []
     },
+    features: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Feature'
+    }],
+    proposals: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Proposal'
+    }]
 }, 
 {
     timestamps: true

@@ -30,25 +30,28 @@ const userSchema = mongoose.Schema({
         enum: ["Student", "Developer", "Company"],
         default: "Student"
     },
+    // UPDATE
+    // Add Github OAuth
     github: {
         type: String,
         unique: true,
         default: ''
     }, 
     /* Template github info to store
-    //github: {
-        id: String,                 // GitHub user ID
-        username: String,           // GitHub username (for display)
-        access_token: String,       // OAuth access token (store securely!)
-        avatar_url: String,         // Profile picture
-        profile_url: String         // e.g., https://github.com/username
-    }, */
+    github: {
+        id: { type: String },
+        username: { type: String },
+        access_token: { type: String },
+        avatar_url: { type: String },
+        profile_url: { type: String }
+    }*/
     bio: {
         type: String,
         trim: true,
         maxlength: [100, 'Max 100 characters']
     },
-    techstack: [String]
+    techstack: [String],
+    
 }, 
 {
     timestamps: true
