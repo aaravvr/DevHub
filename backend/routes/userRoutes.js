@@ -12,11 +12,11 @@ const {
 const {protect} = require('../middleware/authMiddleware');
 const { getUserProjects } = require('../controller/projectController');
 
-router.post('/', registerUser)
-router.post('/login', loginUser)
-router.get('/me', protect, getMe)
-router.put('/me', protect, updateMe)
-router.get('/:id', protect, getUserProjects)
-router.get('/public/:id', getUserById) 
+router.post('/', registerUser);
+router.post('/login', loginUser);
+router.get('/me', protect, getMe);
+router.put('/me', protect, updateMe);
+router.get('/:id', protect, getUserProjects);
+router.get('/public/:id', getUserById);
 
 module.exports = router;

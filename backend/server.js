@@ -2,6 +2,7 @@
 const express = require('express')
 const dotenv = require('dotenv').config()
 const cors = require('cors')
+const cookieParser = require('cookie-parser')
 
 // Import error handler if server doesn't start properly
 const {errorHandler} = require("./middleware/errorMiddleWare")
@@ -17,12 +18,46 @@ connectDB()
 const app = express()
 
 // CORS needed for backend and frontend to successfully connect 
-app.use(cors()); 
+app.use(cors()) 
+
 
 app.use(express.json())
 
 // Use normal parser url
 app.use(express.urlencoded({ extended: false }))
+
+// Helps us access cookies
+app.use(cookieParser())
+
+// Github OAuth imports
+const session = require('express-session')
+const passport = require('passport')
+require('./config/passport') // GitHub strategy config
+
+// Creates a server side session to store github access token
+// More secure than client side local storage
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      // Change to true when deployed
+      secure: false, 
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 5000, 
+    },
+  })
+)
+
+// Allows us to create cookies
+
+
+// Passport middleware
+app.use(passport.initialize())
+app.use(passport.session())
+
+app.use('/auth', require('./routes/githubAuth'))
 
 // Get all CRUD functions from project Routes 
 app.use('/api/projects', require('./routes/projectRoutes'))

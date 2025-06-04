@@ -62,7 +62,7 @@ const projectSchema = mongoose.Schema({
         url: {
             type: String,
             required: true,
-            match: /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+$/,
+            match: /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/?$/
         }
     },
     // Added file tree to store tree + hashmap data structure of repository

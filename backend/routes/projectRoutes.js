@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getAllProjects, createProject, getProjectById, updateProjects, deleteProjects, getUserProjects, getProjectsByLoggedInUser } = require('../controller/projectController');
-const { protect } = require('../middleware/authMiddleware')
+const { protect } = require('../middleware/authMiddleware');
 
 
 // GET /api/projects
@@ -20,7 +20,7 @@ router.route('/:id')
     .delete(protect, deleteProjects) // DELETE
 
 // GET /api/projects/user
-router.get('/user', protect, getUserProjects) 
+router.get('/user', protect, getUserProjects); 
 
 
 module.exports = router;
