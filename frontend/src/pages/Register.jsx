@@ -28,7 +28,6 @@ export default function Register() {
     password,
     password2,
     role,
-    github,
     techstack,
   } = formData
 
@@ -47,7 +46,7 @@ export default function Register() {
 
   useEffect(() => {
     if (isSuccess || user) {
-      navigate('/')
+      navigate('/github-register')
       dispatch(reset())
     }
   }, [isSuccess, user, navigate, dispatch])
@@ -82,7 +81,6 @@ export default function Register() {
           email,
           password,
           role,
-          github,
           techstack,
         })
       )
@@ -107,98 +105,33 @@ export default function Register() {
           </div>
 
           <form onSubmit={onSubmit} className="space-y-4">
-            <input
-              name="full_name"
-              value={full_name}
-              onChange={onChange}
-              placeholder="Full Name"
-              className={inputStyle}
-              required
-            />
-            <input
-              name="username"
-              value={username}
-              onChange={onChange}
-              placeholder="Username"
-              className={inputStyle}
-              required
-            />
-            <input
-              type="email"
-              name="email"
-              value={email}
-              onChange={onChange}
-              placeholder="Email"
-              className={inputStyle}
-              required
-            />
-            <input
-              type="password"
-              name="password"
-              value={password}
-              onChange={onChange}
-              placeholder="Password"
-              className={inputStyle}
-              required
-            />
-            <input
-              type="password"
-              name="password2"
-              value={password2}
-              onChange={onChange}
-              placeholder="Confirm Password"
-              className={inputStyle}
-              required
-            />
-            <select
-              name="role"
-              value={role}
-              onChange={onChange}
-              className={inputStyle}
-              required
-            >
+            <input name="full_name" value={full_name} onChange={onChange} placeholder="Full Name" className={inputStyle} required/>
+            <input name="username" value={username} onChange={onChange} placeholder="Username" className={inputStyle} required />
+            <input type="email" name="email" value={email} onChange={onChange} placeholder="Email" className={inputStyle} required/>
+            <input type="password" name="password" value={password} onChange={onChange} placeholder="Password" className={inputStyle} required/>
+            <input type="password" name="password2" value={password2} onChange={onChange} placeholder="Confirm Password" className={inputStyle} required />
+
+            <select name="role" value={role} onChange={onChange} className={inputStyle} required>
               <option value="" disabled>
                 Select Your Role
               </option>
               <option>Student</option>
               <option>Developer</option>
+              
               <option>Company</option>
             </select>
-            <input
-              type="url"
-              name="github"
-              value={github}
-              onChange={onChange}
-              placeholder="GitHub Profile (optional)"
-              className={inputStyle}
-            />
+
             <div>
-              <input
-                type="text"
-                value={techInput}
-                onChange={(e) => setTechInput(e.target.value)}
-                placeholder="Add Tech Stack"
-                className={inputStyle}
-              />
-              <button
-                type="button"
-                onClick={addTech}
-                className="mt-2 w-full bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-medium rounded-md px-4 py-2 transition"
-              >
+              <input type="text" value={techInput} onChange={(e) => setTechInput(e.target.value)} placeholder="Add Tech Stack" className={inputStyle} />
+
+              <button type="button" onClick={addTech} className="mt-2 w-full bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-medium rounded-md px-4 py-2 transition">
                 Add Tech
               </button>
-              <div className="mt-2 flex flex-wrap gap-2">
+              <div className="mt-2 flex flex-wrap gap-2" >
                 {techstack.map((tech, index) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 text-sm"
-                  >
+                  <span key={index} className="inline-flex items-center px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 text-sm">
                     {tech}
-                    <button
-                      type="button"
-                      onClick={() => removeTech(index)}
-                      className="ml-2 text-red-500 hover:text-red-700"
-                    >
+                    <button type="button" onClick={() => removeTech(index) } className="ml-2 text-red-500 hover:text-red-700">
                       X
                     </button>
                   </span>
@@ -206,16 +139,13 @@ export default function Register() {
               </div>
             </div>
 
-            <button
-              type="submit"
-              className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold tracking-wide shadow-md transition rounded-lg px-4 py-2 border-none"
-            >
+            <button type="submit" className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold tracking-wide shadow-md transition rounded-lg px-4 py-2 border-none">
               Register
             </button>
           </form>
 
           <p className="text-center text-sm text-gray-500">
-            Already have an account?{' '}
+          Already have an account?{' '}
             <Link to="/login" className="text-indigo-500 font-medium hover:underline">
               Login
             </Link>
