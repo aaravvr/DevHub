@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { createProject } from '../features/projects/projectSlice';
 import { ToastContainer } from 'react-toastify';
 import axios from 'axios';
+import { isErrored } from 'supertest/lib/test';
 
 const parseGithubUrl = (urlStr) => {
   try {
@@ -52,7 +53,6 @@ function CreateProject() {
 
 
   const addTech = () => {
-    // Good practice to ignore whitespace leading to blank entries
     if (techInput.trim()) {
       // Adds new techInput to previous array of tech stack stored in formData
       setFormData({ ...formData, tech_stack: [...formData.tech_stack, techInput.trim()] });
@@ -68,7 +68,7 @@ function CreateProject() {
     }
   };
 
-  // Studentally creates a new empty feature each time it's clicked
+  // Creates a new empty feature each time it's clicked
   const addFeature = () => {
     setFormData({ ...formData, features_wanted: [...formData.features_wanted, { title: '', desc: '' }] });
   };
@@ -77,9 +77,7 @@ function CreateProject() {
   // Can't directly update like addTech since it's adding an object not single element
   const updateFeature = (index, field, value) => {
     const newFeatures = [...formData.features_wanted];
-    // Indexes into current (empty) feature to add value to field (title/desc)
     newFeatures[index][field] = value;
-    // Replace old features array with new one
     setFormData({ ...formData, features_wanted: newFeatures });
   };
 
@@ -117,6 +115,22 @@ function CreateProject() {
 
     if (!user || !user._id) {
       toast.error('User not authenticated.');
+      return;
+    }
+
+    // Make sure user owns repo
+    try {
+      await axios.post('/api/github/verify-repo', {
+        owner: parsedRepo.owner,
+        repo: parsedRepo.repo
+      }, {
+        headers: {
+          Authorization: 'Bearer ' + user.github.access_token
+        }
+      });
+    } catch (error) {
+      console.log("HELLO", user.token, user.github)
+      toast.error('You are not authorized to use this repository.');
       return;
     }
 

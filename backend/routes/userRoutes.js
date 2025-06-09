@@ -7,7 +7,8 @@ const {
     updateMe,
     getUserById,
 } = require('../controller/userController')
-
+const User = require('../models/userModel');
+const Project = require('../models/projectModel');
 // protect used to check for authentication
 const {protect} = require('../middleware/authMiddleware');
 const { getUserProjects } = require('../controller/projectController');
