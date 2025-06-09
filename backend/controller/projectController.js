@@ -83,7 +83,7 @@ const createProject = asyncHandler( async (req, res) => {
     const {title, desc, access_type, tech_stack, 
         tags, features_wanted, github_repo, fileTree} = req.body
 
-        console.log("BLUD", req.user);
+        // console.log("BLUD", req.user);
 
     // If no request body, or text in body, throw error
     if (!title || !desc || !req.user || !github_repo || !access_type) {
@@ -108,7 +108,7 @@ const createProject = asyncHandler( async (req, res) => {
         fileTree: buildFileTree(fileTree)
     })
 
-    console.log("PROJECT", project);
+    // console.log("PROJECT", project);
 
     res.status(201).json(project);
 });

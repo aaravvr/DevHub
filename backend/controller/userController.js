@@ -30,19 +30,13 @@ const registerUser = asyncHandler(async(req, res) => {
         throw new Error('User already exists with this username');
     }
 
-    // Check if user with same github profile already exists
-    if(github) {
-        const githubExists = await User.findOne({ github })
-        if(githubExists) {
-            res.status(400);
-            throw new Error('Github profile is already linked to another user');
-        }
-    }
-
     // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt)
 
+
+    // console.log(full_name, username, email, hashedPassword, role, techstack);
+    
     // Create user
     const user = await User.create({
         full_name,
@@ -50,9 +44,10 @@ const registerUser = asyncHandler(async(req, res) => {
         email,
         password: hashedPassword,
         role,
-        github,
         techstack
     })
+
+    // console.log("USER", user);
 
     if(user) {
         // Creates cookie to save user id

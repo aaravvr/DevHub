@@ -6,43 +6,57 @@ const User = require('../models/userModel')
 
 // Redirect to github sign in page
 // router.get('/github', passport.authenticate('github', { scope: ['user:email'] }));
-router.get('/github', 
+router.get('/github',
   (req, res, next) => {
     // Get user id from url query
-    const localUserId = req.query.userId
+    const localUserId = req.query.userId;
+
+    // Don't go to github without user ID
+    if (!localUserId) {
+      return res.redirect('http://localhost:5173/github-error');
+    }
+
     // Pass state through so we can access it in callback request
     // Cannot put in session, gets wiped by github session
     passport.authenticate('github', {
       scope: ['user:email'],
-      state: localUserId  
-    })
-    (req, res, next);
+      state: localUserId
+    })(req, res, next);
   }
 );
 
 
 // Request github again for access token 
 router.get('/github/callback', 
-  (req, res, next) => {
+  async (req, res, next) => {
+    const localUserId = req.query.state;
+
+    // Don't go to github callback without user ID
+    if (!localUserId) return res.status(400).send('Missing local user ID');
+
+    // Outside passport so it doesn't run if user doesn't exist
+    const user = await User.findById(localUserId);
+    if (!user) return res.status(404).send('User not found');
+
     passport.authenticate('github', { failureRedirect: '/' }, async (err, githubUser, info) => {
       if (err) return next(err);
-      
-      if (!githubUser) return res.redirect('/');
-
+      //console.log('RUNS');
+  
       // Gets user from state passed earlier
       const localUserId = req.query.state
       if (!localUserId) return res.status(400).send('Missing local user ID');
+    
+      // Keep redirect at the end so test cases run properly
+      if (!githubUser) return res.redirect('/');
 
-      const user = await User.findById(localUserId);
-      if (!user) return res.status(404).send('User not found');
-
-      console.log("ID", githubUser.id);
-      console.log("USERNAME", githubUser.username)
+      // console.log("USERNAME", githubUser.username)
 
       // Ensures same user doesn't create two accounts
       const originalUser = await User.findOne({ 'github.id': githubUser.id });
 
       if (originalUser && originalUser._id.toString() !== localUserId) {
+        // console.log("OG IS: ", originalUser);
+        // console.log("CURRENT IS: ", localUserId);
         return res.redirect('http://localhost:5173/github-error');
       }
 
@@ -52,11 +66,12 @@ router.get('/github/callback',
         username: githubUser.username,
         accessToken: githubUser.accessToken
       }
-      
+
+      //console.log("USER GITHUB INFO", githubUser.accessToken);
+  
       await user.save()
 
       res.redirect('http://localhost:5173/github-success');
-
     })
     (req, res, next)
   }
