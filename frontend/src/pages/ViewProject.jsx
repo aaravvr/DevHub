@@ -138,12 +138,12 @@ function ViewProject({ project }) {
       </div>
 
       {/* Features */}
-      {projectToShow.features_wanted?.length > 0 && (
+      {projectToShow.features?.length > 0 && (
         <div className="card bg-base-100 shadow-xl mb-6">
           <div className="card-body">
             <h3 className="card-title text-xl font-semibold mb-2">Features Wanted</h3>
             <ul className="space-y-4">
-              {projectToShow.features_wanted.map((feature, index) => (
+              {projectToShow.features.map((feature, index) => (
                 <li key={index} className="bg-base-200 p-4 rounded-lg">
                   <p className="text-white text-lg font-semibold mb-1">{feature.title}</p>
                   <p className="text-white text-sm">{feature.desc}</p>

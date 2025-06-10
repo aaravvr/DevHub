@@ -38,7 +38,8 @@ function CreateProject() {
     access_type: 'public',
     tech_stack: [],
     tags: [],
-    features_wanted: [{ title: '', desc: '' }],
+    // Stored differently in model, will be processed in backend
+    features: [{ title: '', desc: '' }],
     github_repo: { url: '' },
     fileTree: []
   });
@@ -70,15 +71,15 @@ function CreateProject() {
 
   // Creates a new empty feature each time it's clicked
   const addFeature = () => {
-    setFormData({ ...formData, features_wanted: [...formData.features_wanted, { title: '', desc: '' }] });
+    setFormData({ ...formData, features: [...formData.features, { title: '', desc: '' }] });
   };
   
-  // Populates empty feature with new feature field data (either title or desc)
+  // Populates empty feature with new feature field data (either title or description)
   // Can't directly update like addTech since it's adding an object not single element
   const updateFeature = (index, field, value) => {
-    const newFeatures = [...formData.features_wanted];
+    const newFeatures = [...formData.features];
     newFeatures[index][field] = value;
-    setFormData({ ...formData, features_wanted: newFeatures });
+    setFormData({ ...formData, features: newFeatures });
   };
 
   // Remove tag by index
@@ -92,7 +93,7 @@ function CreateProject() {
   };
 
   const removeFeature = (indexToRemove) => {
-    setFormData({ ...formData, features_wanted: formData.features_wanted.filter((_, index) => index !== indexToRemove) });
+    setFormData({ ...formData, features: formData.features.filter((_, index) => index !== indexToRemove) });
   };
 
   const onSubmit = async (e) => {
@@ -189,7 +190,7 @@ function CreateProject() {
         </div>
 
         {/* Index included to keep track of features when updating */}
-        {formData.features_wanted.map((feature, index) => (
+        {formData.features.map((feature, index) => (
           <div key={index} className="space-y-1">
             <input
               type="text"

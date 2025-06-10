@@ -21,7 +21,7 @@
 - `access_type` (public/private)
 - `tech_stack` (array, comma separated or checkboxes)
 - `tags` (array)
-- `features_wanted` (array of {title, desc})
+- `features` (array of {title, desc})
 - `github_repo.url` (string)
 
 Submit via `POST /api/projects` using `axiosInstance`
@@ -34,7 +34,7 @@ Submit via `POST /api/projects` using `axiosInstance`
   "access_type": "public",
   "tech_stack": ["React", "Node.js"],
   "tags": ["open-source", "Student-developed"],
-  "features_wanted": [
+  "features": [
     { "title": "Chat", "desc": "Live collaboration chat"}, 
     { "title": "Competitions", "desc": "Coding competitions with voting"}
   ],

@@ -4,12 +4,11 @@ const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
 
 
-
-// register new user
-// POST /api/users
+// @route   POST /api/users
+// @desc    Register User
+// @access  Public
 const registerUser = asyncHandler(async(req, res) => {
-    const { full_name, username, email, password, role, github, techstack } = req.body
-
+    const { full_name, username, email, password, role, github, techstack } = req.body;
     if(!full_name || !username || !email || !password || !role) {
         res.status(400)
         throw new Error('Please add all fields');
@@ -72,8 +71,9 @@ const registerUser = asyncHandler(async(req, res) => {
     }
 })
 
-// authenticate new user
-// POST /api/login
+// @route   POST /api/users
+// @desc    Login User
+// @access  Public
 const loginUser = asyncHandler(async(req, res) => {
     const {username, password} = req.body
 
@@ -100,8 +100,9 @@ const loginUser = asyncHandler(async(req, res) => {
     }
 })
 
-// Get user data
-// GET /api/users/me
+// @route   GET /api/users/me
+// @desc    Get Current User Info
+// @access  Private
 const getMe = asyncHandler(async (req, res) => {
     const {_id, full_name, username, email, role, github, techstack} = await User.findById(req.user.id)
 
@@ -116,8 +117,9 @@ const getMe = asyncHandler(async (req, res) => {
     })
 })
 
-// Update user data
-// PUT /api/users/me
+// @route   PUT /api/users/me
+// @desc    Update User Info
+// @access  Private
 const updateMe = asyncHandler(async (req, res) => {
   const updates = req.body;
   const user = await User.findByIdAndUpdate(req.user.id, updates, { new: true });
@@ -133,8 +135,9 @@ const updateMe = asyncHandler(async (req, res) => {
   });
 });
 
-//  Get public user data by ID
-// GET /api/users/public/:id
+// @route   GET /api/users/:id
+// @desc    Get User Info
+// @access  Public
 const getUserById = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id).select('-password')
 

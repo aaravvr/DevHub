@@ -1,11 +1,12 @@
 // Import express handler for async error handling
 const asyncHandler = require('express-async-handler')
 
-const Project = require('../models/projectModel')
+const Project = require('../models/projectModel');
+const Feature = require('../models/featureModel');
 
 // @desc    Get projects
 // @route   GET /api/projects
-// @access  Private
+// @access  Public
 const getAllProjects = asyncHandler( async (req, res) => {
   const projects = await Project.find().populate('creator', 'username full_name role')
 
@@ -14,23 +15,23 @@ const getAllProjects = asyncHandler( async (req, res) => {
 
 // @desc    Get projects by id
 // @route   GET /api/projects/:id
-// @access  Private
+// @access  Public
 const getProjectById = asyncHandler( async (req, res) => {
-  const project = await Project.findById(req.params.id).populate('creator', 'username full_name role')
+  const project = await Project.findById(req.params.id).populate('creator', 'username full_name role');
 
   if (!project) {
-    res.status(404)
-    throw new Error('Project not found')
+    res.status(404);
+    throw new Error('Project not found');
   }
 
   res.status(200).json(project)
 })
 
 // @desc    Get user projects
-// @route   GET /api/movies/user/:id
-// @access  Private
+// @route   GET /api/projects/user/:id
+// @access  Public
 const getUserProjects = asyncHandler( async (req, res) => {
-  const userProjects = await Project.find({ creator: req.user._id }).populate('creator', 'username full_name role')
+  const userProjects = await Project.find({ creator: req.user._id }).populate('creator', 'username full_name role');
 
   res.status(200).json(userProjects)
 })
@@ -81,7 +82,7 @@ const buildFileTree = (flatTree) => {
 const createProject = asyncHandler( async (req, res) => {
     // Extract required fields
     const {title, desc, access_type, tech_stack, 
-        tags, features_wanted, github_repo, fileTree} = req.body
+        tags, features, github_repo, fileTree} = req.body
 
         // console.log("BLUD", req.user);
 
@@ -95,20 +96,38 @@ const createProject = asyncHandler( async (req, res) => {
       github_repo.url = github_repo.url.slice(0, -1);
     }
 
-    //console.log("RAW INFO", title, desc, github_repo);
+    // Create the project first
     const project = await Project.create({
         title,
         desc, 
         access_type,
         tech_stack, 
         tags, 
-        features_wanted, 
         creator: req.user._id, 
         github_repo,
         fileTree: buildFileTree(fileTree)
-    })
+    });
 
-    // console.log("PROJECT", project);
+    // Create feature objects for the project
+    let featureList = [];
+    for (const feature of features) {
+      const { title, desc } = feature;
+      // Description default if not provided by user
+      let descToUse = desc || `Auto-created from project`;
+
+      const newFeature = await Feature.create({
+        title,
+        creator: req.user._id,
+        desc: descToUse,
+        project: project._id
+      });
+      featureList.push(newFeature);
+    }
+
+    // Attach features to project
+    // Only need feature id, not entire object
+    project.features = featureList.map(f => f._id);
+    await project.save();
 
     res.status(201).json(project);
 });
@@ -120,8 +139,8 @@ const deleteProjects = asyncHandler(async (req, res) => {
     const project = await Project.findById(req.params.id).populate('creator', 'username full_name role')
 
     if (!project) {
-      res.status(400)
-      throw new Error('Project not found')
+      res.status(400);
+      throw new Error('Project not found');
     }
 
     // Only project creator can delete
@@ -130,7 +149,7 @@ const deleteProjects = asyncHandler(async (req, res) => {
     }
 
 
-    await project.deleteOne()
+    await project.deleteOne();
 
     res.status(200).json({ message: `Project with id ${req.params.id} deleted`})
 })
@@ -140,6 +159,7 @@ const deleteProjects = asyncHandler(async (req, res) => {
 // @access  Private
 const updateProjects = asyncHandler(async (req, res) => {
   const project = await Project.findById(req.params.id).populate('creator', 'username full_name role')
+
   if (!project) {
     res.status(400)
     throw new Error('Project not found')
@@ -153,7 +173,7 @@ const updateProjects = asyncHandler(async (req, res) => {
     new: true,
   }).populate('creator', 'username full_name role')
 
-  res.status(200).json(updatedProject)
+  res.status(200).json(updatedProject);
 })
 
 
@@ -161,8 +181,8 @@ const updateProjects = asyncHandler(async (req, res) => {
 // @route  GET /api/projects/my-projects
 // @access Private
 const getProjectsByLoggedInUser = asyncHandler(async (req, res) => {
-  const projects = await Project.find({ creator: req.user._id }).populate('creator', 'username full_name role')
-  res.status(200).json(projects)
+  const projects = await Project.find({ creator: req.user._id }).populate('creator', 'username full_name role');
+  res.status(200).json(projects);
 })
 
 module.exports = {

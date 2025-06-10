@@ -27,7 +27,7 @@
 - collaborators (list of user ids)
 - tech_stack
 - tags
-- features_wanted (object describing feature and properties wanted for project)
+- features (object describing feature and properties wanted for project)
 - createdAt
 - updatedAt
 

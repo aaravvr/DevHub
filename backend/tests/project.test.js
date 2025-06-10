@@ -51,7 +51,7 @@ describe('Project CRUD', () => {
         access_type: 'public',
         tech_stack: ['Node', 'MongoDB'],
         tags: ['platform', 'cool', 'MERN'],
-        features_wanted: [
+        features: [
           { title: 'Chat', desc: 'Realtime' },
           { title: 'Matching', desc: 'AI implemented' }
         ],
@@ -105,7 +105,7 @@ describe('Project CRUD', () => {
           access_type: 'public',
           tech_stack: ['Node', 'MongoDB'],
           tags: ['platform', 'cool', 'MERN'],
-          features_wanted: [
+          features: [
             { title: 'Chat', desc: 'Realtime' },
             { title: 'Matching', desc: 'AI implemented' }
           ],
@@ -188,7 +188,7 @@ describe('Project CRUD', () => {
           access_type: 'private',
           tech_stack: ['Express', 'MongoDB'],
           tags: ['updated', 'test'],
-          features_wanted: [
+          features: [
             { title: 'Auth', desc: 'Add authentication' },
             { title: 'Stats', desc: 'View stats' }
           ],
@@ -205,7 +205,7 @@ describe('Project CRUD', () => {
       expect(res.body.access_type).toBe('private');
       expect(res.body.tech_stack).toEqual(['Express', 'MongoDB']);
       expect(res.body.tags).toEqual(['updated', 'test']);
-      expect(res.body.features_wanted.length).toBe(2);
+      expect(res.body.features.length).toBe(2);
       expect(res.body.github_repo.repo).toBe('midpoint');
     });
 
@@ -229,7 +229,7 @@ describe('Project CRUD', () => {
       access_type: 'public',
       tech_stack: ['React'],
       tags: ['public-access'],
-      features_wanted: [{ title: 'Info', desc: 'I want info' }],
+      features: [{ title: 'Info', desc: 'I want info' }],
       github_repo: {
         owner: 'greg',
         repo: 'book-in',

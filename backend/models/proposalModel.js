@@ -1,5 +1,7 @@
-const mongoose = require('mongoose');
+// Import mongoose
+const mongoose = require('mongoose')
 
+// Create proposal model
 const proposalSchema = new mongoose.Schema({
   feature: {
     type: mongoose.Schema.Types.ObjectId,
@@ -11,17 +13,24 @@ const proposalSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  title: String,
-  description: String,
+  title: {
+    type: String,
+    required: [true, 'Please enter proposal title'],
+  },
+  desc: {
+    type: String,
+    required: [true, 'Please enter a short description of your proposal']
+  },
+  // Notes can be added by anyone part of the project
+  notes: [String],
+  attachmentUrl: {
+    type: String
+  },
   status: {
     type: String,
     enum: ['Pending', 'Approved', 'Rejected'],
     default: 'Pending'
   },
-  submittedAt: {
-    type: Date,
-    default: Date.now
-  }
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('Proposal', proposalSchema);

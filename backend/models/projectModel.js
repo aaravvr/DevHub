@@ -1,7 +1,7 @@
 // Import mongoose
 const mongoose = require('mongoose')
 
-// Create user model
+// Create project model
 const projectSchema = mongoose.Schema({
     title: {
         type: String,
@@ -26,19 +26,6 @@ const projectSchema = mongoose.Schema({
             message: 'Max 8 tags allowed'
         }
     },
-    features_wanted: [
-        // Array of objects (features) title and desc
-        {
-            title: {
-                type: String,
-                trim: true,
-            },
-            desc: {
-                type: String,
-                trim: true,
-            }
-        }
-    ],
     creator: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
@@ -74,13 +61,6 @@ const projectSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Feature'
     }],
-    proposals: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Proposal'
-    }]
-}, 
-{
-    timestamps: true
-})
+}, {timestamps: true});
 
 module.exports = mongoose.model('Project', projectSchema)
