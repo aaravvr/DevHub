@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import { createProject } from '../features/projects/projectSlice';
 import { ToastContainer } from 'react-toastify';
 import axios from 'axios';
-import { isErrored } from 'supertest/lib/test';
 
 const parseGithubUrl = (urlStr) => {
   try {
@@ -31,8 +30,8 @@ function CreateProject() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
+  console.log("BRUH WHAT", user);
 
-  console.log("OG USER", user)
   const [formData, setFormData] = useState({
     title: '',
     desc: '',
@@ -127,11 +126,10 @@ function CreateProject() {
         repo: parsedRepo.repo
       }, {
         headers: {
-          Authorization: 'Bearer ' + user.github.access_token
+          Authorization: 'Bearer ' + user.github.accessToken || user.github.access_token
         }
       });
     } catch (error) {
-      console.log("USER", user.github)
       toast.error('You are not authorized to use this repository.');
       return;
     }

@@ -6,11 +6,9 @@ const API_URL = import.meta.env.VITE_API_URL + '/api/users'
 const register = async (userData) => {
         const response = await axiosInstance.post(API_URL, userData)
 
-        console.log("SERVICE", response.data);
         if(response.data) {
             localStorage.setItem('user', JSON.stringify(response.data))
             localStorage.setItem('token', response.data.token)
-            console.log("SERVICE", response.data.token);
         }
 
         return response.data   

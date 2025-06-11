@@ -71,7 +71,7 @@ router.get('/github/callback',
       //console.log("USER GITHUB INFO", githubUser.accessToken);
   
       await user.save()
-      console.log("USER MADE", user);
+
 
       res.redirect('http://localhost:5173/github-success');
     })
