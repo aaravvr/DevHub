@@ -19,6 +19,7 @@ import EditProject from './pages/EditProject'
 import GithubRegister from './pages/GithubRegister'
 import GithubSuccess from './pages/GithubSuccess'
 import GithubError from './pages/GitHubError'
+import FeaturePage from './pages/FeaturePage'
 
 
 
@@ -42,6 +43,7 @@ const App = () => {
           <Route path="/github-register" element={<GithubRegister />} />
           <Route path="/github-success" element={<GithubSuccess />} />
           <Route path="/github-error" element={<GithubError />} />
+          <Route path="/features/:id" element={<FeaturePage />} />
         </Routes>
       </main>
 

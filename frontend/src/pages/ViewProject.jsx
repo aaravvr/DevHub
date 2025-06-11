@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams, useLocation } from 'react-router-dom'
+import { useNavigate, useParams, useLocation, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import Spinner from '../components/Spinner'
 import { getProjectById, resetSelectedProject } from '../features/projects/projectSlice'
@@ -145,7 +145,12 @@ function ViewProject({ project }) {
             <ul className="space-y-4">
               {projectToShow.features.map((feature, index) => (
                 <li key={index} className="bg-base-200 p-4 rounded-lg">
-                  <p className="text-white text-lg font-semibold mb-1">{feature.title}</p>
+                  <Link
+                    to={`/features/${feature._id}`}
+                    className="text-white text-lg font-semibold hover:underline"
+                  >
+                    {feature.title}
+                  </Link>
                   <p className="text-white text-sm">{feature.desc}</p>
                 </li>
               ))}

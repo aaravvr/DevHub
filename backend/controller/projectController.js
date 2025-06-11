@@ -148,7 +148,6 @@ const deleteProjects = asyncHandler(async (req, res) => {
       return res.status(401).json({ message: 'Not authorized' });
     }
 
-
     await project.deleteOne();
 
     res.status(200).json({ message: `Project with id ${req.params.id} deleted`})

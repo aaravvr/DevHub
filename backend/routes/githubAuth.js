@@ -60,16 +60,18 @@ router.get('/github/callback',
         return res.redirect('http://localhost:5173/github-error');
       }
 
+      //console.log("THE TOKEN", githubUser.accessToken);
       // Puts github info in user DB
       user.github = {
         id: githubUser.id,
         username: githubUser.username,
-        accessToken: githubUser.accessToken
+        access_token: githubUser.accessToken
       }
 
       //console.log("USER GITHUB INFO", githubUser.accessToken);
   
       await user.save()
+      console.log("USER MADE", user);
 
       res.redirect('http://localhost:5173/github-success');
     })

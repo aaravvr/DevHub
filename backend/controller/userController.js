@@ -35,7 +35,7 @@ const registerUser = asyncHandler(async(req, res) => {
 
 
     // console.log(full_name, username, email, hashedPassword, role, techstack);
-    
+
     // Create user
     const user = await User.create({
         full_name,
@@ -43,6 +43,7 @@ const registerUser = asyncHandler(async(req, res) => {
         email,
         password: hashedPassword,
         role,
+        github,
         techstack
     })
 
@@ -55,6 +56,7 @@ const registerUser = asyncHandler(async(req, res) => {
         //     secure: false,    
         //     maxAge: 24 * 60 * 60 * 1000, 
         // });
+        console.log("CONTROLLER", user.github);
         res.status(201).json({
             _id: user.id,
             full_name: user.full_name,

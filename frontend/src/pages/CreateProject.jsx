@@ -32,6 +32,7 @@ function CreateProject() {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
 
+  console.log("OG USER", user)
   const [formData, setFormData] = useState({
     title: '',
     desc: '',
@@ -130,7 +131,7 @@ function CreateProject() {
         }
       });
     } catch (error) {
-      console.log("HELLO", user.token, user.github)
+      console.log("USER", user.github)
       toast.error('You are not authorized to use this repository.');
       return;
     }
