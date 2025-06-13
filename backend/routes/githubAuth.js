@@ -72,7 +72,6 @@ router.get('/github/callback',
   
       await user.save()
 
-
       res.redirect('http://localhost:5173/github-success');
     })
     (req, res, next)

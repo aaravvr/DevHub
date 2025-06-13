@@ -30,7 +30,7 @@ function CreateProject() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
-  console.log("BRUH WHAT", user);
+  console.log("BRUH WHAT", user.github);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -121,12 +121,13 @@ function CreateProject() {
 
     // Make sure user owns repo
     try {
+      console.log('EVERYTHING', parsedRepo.owner, parsedRepo.repo, user.github.access_token)
       await axios.post('/api/github/verify-repo', {
         owner: parsedRepo.owner,
         repo: parsedRepo.repo
       }, {
         headers: {
-          Authorization: 'Bearer ' + user.github.accessToken || user.github.access_token
+          Authorization: 'Bearer ' + user.github.access_token
         }
       });
     } catch (error) {
