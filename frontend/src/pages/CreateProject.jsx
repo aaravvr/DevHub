@@ -8,6 +8,7 @@ import { ToastContainer } from 'react-toastify';
 import axios from 'axios';
 import { isErrored } from 'supertest/lib/test';
 
+
 const parseGithubUrl = (urlStr) => {
   try {
     const url = new URL(urlStr);
@@ -19,12 +20,17 @@ const parseGithubUrl = (urlStr) => {
   }
 };
 
-// Fetches full github tree structure of repository inputted
+// Fetches full github tree structure of repository inputted, with error handling
 const fetchGitHubTree = async (owner, repo) => {
-  const { data: repoData } = await axios.get(`https://api.github.com/repos/${owner}/${repo}`);
-  const branch = repoData.default_branch;
-  const { data: treeData } = await axios.get(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`);
-  return treeData.tree.map(({ path, type }) => ({ path, type }));
+  try {
+    const { data: repoData } = await axios.get(`https://api.github.com/repos/${owner}/${repo}`);
+    const branch = repoData.default_branch;
+    const { data: treeData } = await axios.get(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`);
+    return treeData.tree.map(({ path, type }) => ({ path, type }));
+  } catch (error) {
+    toast.error('Repository not found or inaccessible.');
+    return null;
+  }
 };
 
 function CreateProject() {
@@ -38,7 +44,7 @@ function CreateProject() {
     access_type: 'public',
     tech_stack: [],
     tags: [],
-    features_wanted: [{ title: '', desc: '' }],
+    features: [{ title: '', desc: '' }],
     github_repo: { url: '' },
     fileTree: []
   });
@@ -70,15 +76,15 @@ function CreateProject() {
 
   // Creates a new empty feature each time it's clicked
   const addFeature = () => {
-    setFormData({ ...formData, features_wanted: [...formData.features_wanted, { title: '', desc: '' }] });
+    setFormData({ ...formData, features: [...formData.features, { title: '', desc: '' }] });
   };
   
   // Populates empty feature with new feature field data (either title or desc)
   // Can't directly update like addTech since it's adding an object not single element
   const updateFeature = (index, field, value) => {
-    const newFeatures = [...formData.features_wanted];
+    const newFeatures = [...formData.features];
     newFeatures[index][field] = value;
-    setFormData({ ...formData, features_wanted: newFeatures });
+    setFormData({ ...formData, features: newFeatures });
   };
 
   // Remove tag by index
@@ -92,7 +98,7 @@ function CreateProject() {
   };
 
   const removeFeature = (indexToRemove) => {
-    setFormData({ ...formData, features_wanted: formData.features_wanted.filter((_, index) => index !== indexToRemove) });
+    setFormData({ ...formData, features: formData.features.filter((_, index) => index !== indexToRemove) });
   };
 
   const onSubmit = async (e) => {
@@ -136,9 +142,16 @@ function CreateProject() {
 
     // Send full fileTree to backend to preprocess
     const fileTree = await fetchGitHubTree(parsedRepo.owner, parsedRepo.repo);
+    if (!fileTree) return;
     //console.log(fileTree)
 
-    dispatch(createProject({ ...formData, github_repo: parsedRepo, creator: user._id, fileTree: fileTree}));
+    dispatch(createProject({ 
+      ...formData, 
+      github_repo: parsedRepo, 
+      creator: user._id, 
+      fileTree: fileTree,
+      features: formData.features
+    }));
     navigate('/');
   };
 
@@ -189,7 +202,7 @@ function CreateProject() {
         </div>
 
         {/* Index included to keep track of features when updating */}
-        {formData.features_wanted.map((feature, index) => (
+        {formData.features.map((feature, index) => (
           <div key={index} className="space-y-1">
             <input
               type="text"

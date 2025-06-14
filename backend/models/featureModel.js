@@ -7,21 +7,22 @@ const featureSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  description: String,
-
+  desc: String,
   // Status can be updated by creator
   status: {
     type: String,
     enum: ['Active', 'Completed'],
     default: 'Active'
   },
-
+  project: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Project'
+  },
   // All proposals submitted for this feature 
   proposals: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Proposal'
   }],
-
   // Chatspace for the feature
   chatspace: {
     type: mongoose.Schema.Types.ObjectId,
@@ -31,11 +32,11 @@ const featureSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
-    },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-});
+  },
+  votes: [{
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    value: Number
+  }]
+}, { timestamps: true });
 
 module.exports = mongoose.model('Feature', featureSchema);

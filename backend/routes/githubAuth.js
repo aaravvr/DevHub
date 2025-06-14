@@ -2,7 +2,7 @@ const express = require('express')
 const passport = require('passport')
 const router = express.Router()
 const User = require('../models/userModel')
-
+const axios = require('axios');
 
 // Redirect to github sign in page
 // router.get('/github', passport.authenticate('github', { scope: ['user:email'] }));
@@ -60,11 +60,12 @@ router.get('/github/callback',
         return res.redirect('http://localhost:5173/github-error');
       }
 
+      //console.log("THE TOKEN", githubUser.accessToken);
       // Puts github info in user DB
       user.github = {
         id: githubUser.id,
         username: githubUser.username,
-        accessToken: githubUser.accessToken
+        access_token: githubUser.accessToken
       }
 
       //console.log("USER GITHUB INFO", githubUser.accessToken);
@@ -77,5 +78,37 @@ router.get('/github/callback',
   }
 )
 
+
+// @desc    Verify ownership of a GitHub repo
+// @route   POST /api/github/verify-repo
+// @access  Private
+
+router.post('/verify-repo', async (req, res) => {
+  const { owner } = req.body;
+  const token = req.headers.authorization?.split(' ')[1];
+
+  if (!token) return res.status(401).json({ message: 'Missing GitHub token' });
+
+  try {
+    // Find the user by GitHub token
+    const user = await User.findOne({ 'github.access_token': token });
+
+    if (!user || !user.github || !user.github.username) {
+      return res.status(403).json({ message: 'GitHub user not linked or not found' });
+    }
+
+    // Check if the owner name matches the logged-in user's GitHub username
+    if (owner.toLowerCase() !== user.github.username.toLowerCase()) {
+      console.log("YES BLUD");
+      return res.status(403).json({ message: 'You must be the owner of the repo to proceed.' });
+    }
+
+    // Owner matches
+    res.status(200).json({ success: true, message: 'Verified ownership of repo' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 module.exports = router

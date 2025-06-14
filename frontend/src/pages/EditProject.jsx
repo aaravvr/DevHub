@@ -19,7 +19,7 @@ export default function EditProject() {
     tech_stack: [],
     tag: '',
     tags: [],
-    features_wanted: [{ title: '', description: '' }],
+    features: [{ title: '', desc: '' }],
     github_repo: '',
   })
 
@@ -37,7 +37,7 @@ export default function EditProject() {
         tech_stack: selectedProject.tech_stack || [],
         tag: '',
         tags: selectedProject.tags || [],
-        features_wanted: selectedProject.features_wanted || [{ title: '', description: '' }],
+        features: selectedProject.features || [{ title: '', desc: '' }],
         github_repo: selectedProject.github_repo?.url || '',
       })
     }
@@ -63,19 +63,19 @@ export default function EditProject() {
   }
 
   const handleFeatureChange = (index, key, value) => {
-    const updated = [...formData.features_wanted]
+    const updated = [...formData.features]
     updated[index][key] = value
-    setFormData({ ...formData, features_wanted: updated })
+    setFormData({ ...formData, features: updated })
   }
 
   const addFeature = () => {
-    setFormData({ ...formData, features_wanted: [...formData.features_wanted, { title: '', description: '' }] })
+    setFormData({ ...formData, features: [...formData.features, { title: '', desc: '' }] })
   }
 
   const removeFeature = (index) => {
     setFormData({
       ...formData,
-      features_wanted: formData.features_wanted.filter((_, i) => i !== index),
+      features: formData.features.filter((_, i) => i !== index),
     })
   }
 
@@ -87,7 +87,7 @@ export default function EditProject() {
       access_type: formData.access_type,
       tech_stack: formData.tech_stack,
       tags: formData.tags,
-      features_wanted: formData.features_wanted,
+      features: formData.features,
       github_repo: { url: formData.github_repo },
     }
 
@@ -125,10 +125,10 @@ export default function EditProject() {
           <button type="button" className="btn" onClick={() => addToArray('tags', 'tag')}>Add</button>
         </div>
 
-        {formData.features_wanted.map((feature, index) => (
+        {formData.features.map((feature, index) => (
           <div key={index} className="space-y-2">
             <input className="input input-bordered w-full" placeholder="Feature Title" value={feature.title} onChange={(e) => handleFeatureChange(index, 'title', e.target.value)} />
-            <input className="input input-bordered w-full" placeholder="Feature Description" value={feature.description} onChange={(e) => handleFeatureChange(index, 'description', e.target.value)} />
+            <input className="input input-bordered w-full" placeholder="Description" value={feature.desc} onChange={(e) => handleFeatureChange(index, 'desc', e.target.value)} />
             <button type="button" className="btn btn-error btn-sm" onClick={() => removeFeature(index)}>Remove</button>
           </div>
         ))}

@@ -48,7 +48,7 @@ describe('Integration: User and Project flow', () => {
         access_type: 'public',
         tech_stack: ['Python'],
         tags: ['int-test'],
-        features_wanted: [{ title: 'chat', desc: 'live chat please' }],
+        features: [{ title: 'chat', desc: 'live chat please' }],
         github_repo: {
           owner: 'greg',
           repo: 'int-repo',

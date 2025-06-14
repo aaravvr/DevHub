@@ -30,11 +30,6 @@ const userSchema = mongoose.Schema({
         enum: ["Student", "Developer", "Company"],
         default: "Student"
     },
-    // github: {
-    //     type: String,
-    //     unique: true,
-    //     default: ''
-    // }, 
     github: {
         id: { type: String },
         username: { type: String },
