@@ -5,13 +5,16 @@ import { configureStore } from '@reduxjs/toolkit';
 import projectReducer from '../features/projects/projectSlice';
 
 //Import the auth reducer 
-import authReducer from '../features/auth/authSlice'
+import authReducer from '../features/auth/authSlice';
+
+import featureReducer from '../features/featuresLogic/featureSlice';
 
 // Redux initialization to maintain state in the app using reducers
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     projects: projectReducer,
+    features: featureReducer
   },
 });
 

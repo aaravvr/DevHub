@@ -89,18 +89,19 @@ const deleteFeature = asyncHandler(async (req, res) => {
     throw new Error('Not authorized to delete this feature');
   }
 
-  // Delete all proposals under the feature first
+  // Delete all proposals under the feature
   await Proposal.deleteMany({ feature: feature._id });
 
-  // Delete feature from project
-  const projectBody = await Project.findById(feature.project);
-  if (projectBody) {
-    projectBody.features = projectBody.features.filter(fId => fId.toString() !== feature._id.toString());
-    await projectBody.save();
-  }
+  // Remove feature from associated project
+  await Project.findByIdAndUpdate(
+    feature.project,
+    { $pull: { features: feature._id } }
+  );
 
-  await feature.remove();
-  res.json({ message: 'Feature removed' });
+  // Delete the feature itself
+  await Feature.deleteOne({ _id: feature._id });
+
+  res.status(200).json({ message: 'Feature deleted successfully', id: feature._id });
 });
 
 module.exports = {

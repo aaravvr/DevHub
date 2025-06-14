@@ -17,7 +17,11 @@ const getAllProjects = asyncHandler( async (req, res) => {
 // @route   GET /api/projects/:id
 // @access  Public
 const getProjectById = asyncHandler( async (req, res) => {
-  const project = await Project.findById(req.params.id).populate('creator', 'username full_name role');
+  const project = await Project.findById(req.params.id)
+    .populate('creator', 'username full_name role')
+    .populate('features', 'title desc');
+
+    console.log('PROJECT HERE:', project)
 
   if (!project) {
     res.status(404);

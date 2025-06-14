@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { createProject } from '../features/projects/projectSlice';
 import { ToastContainer } from 'react-toastify';
 import axios from 'axios';
+import { isErrored } from 'supertest/lib/test';
+
 
 const parseGithubUrl = (urlStr) => {
   try {
@@ -18,19 +20,23 @@ const parseGithubUrl = (urlStr) => {
   }
 };
 
-// Fetches full github tree structure of repository inputted
+// Fetches full github tree structure of repository inputted, with error handling
 const fetchGitHubTree = async (owner, repo) => {
-  const { data: repoData } = await axios.get(`https://api.github.com/repos/${owner}/${repo}`);
-  const branch = repoData.default_branch;
-  const { data: treeData } = await axios.get(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`);
-  return treeData.tree.map(({ path, type }) => ({ path, type }));
+  try {
+    const { data: repoData } = await axios.get(`https://api.github.com/repos/${owner}/${repo}`);
+    const branch = repoData.default_branch;
+    const { data: treeData } = await axios.get(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`);
+    return treeData.tree.map(({ path, type }) => ({ path, type }));
+  } catch (error) {
+    toast.error('Repository not found or inaccessible.');
+    return null;
+  }
 };
 
 function CreateProject() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
-  console.log("BRUH WHAT", user.github);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -38,7 +44,6 @@ function CreateProject() {
     access_type: 'public',
     tech_stack: [],
     tags: [],
-    // Stored differently in model, will be processed in backend
     features: [{ title: '', desc: '' }],
     github_repo: { url: '' },
     fileTree: []
@@ -74,7 +79,7 @@ function CreateProject() {
     setFormData({ ...formData, features: [...formData.features, { title: '', desc: '' }] });
   };
   
-  // Populates empty feature with new feature field data (either title or description)
+  // Populates empty feature with new feature field data (either title or desc)
   // Can't directly update like addTech since it's adding an object not single element
   const updateFeature = (index, field, value) => {
     const newFeatures = [...formData.features];
@@ -121,7 +126,6 @@ function CreateProject() {
 
     // Make sure user owns repo
     try {
-      console.log('EVERYTHING', parsedRepo.owner, parsedRepo.repo, user.github.access_token)
       await axios.post('/api/github/verify-repo', {
         owner: parsedRepo.owner,
         repo: parsedRepo.repo
@@ -131,15 +135,23 @@ function CreateProject() {
         }
       });
     } catch (error) {
+      console.log("HELLO", user.token, user.github)
       toast.error('You are not authorized to use this repository.');
       return;
     }
 
     // Send full fileTree to backend to preprocess
     const fileTree = await fetchGitHubTree(parsedRepo.owner, parsedRepo.repo);
+    if (!fileTree) return;
     //console.log(fileTree)
 
-    dispatch(createProject({ ...formData, github_repo: parsedRepo, creator: user._id, fileTree: fileTree}));
+    dispatch(createProject({ 
+      ...formData, 
+      github_repo: parsedRepo, 
+      creator: user._id, 
+      fileTree: fileTree,
+      features: formData.features
+    }));
     navigate('/');
   };
 

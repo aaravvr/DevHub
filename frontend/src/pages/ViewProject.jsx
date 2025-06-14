@@ -1,3 +1,4 @@
+import AddFeatureModal from '../components/AddFeatureModal'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams, useLocation, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
@@ -20,18 +21,15 @@ function ViewProject({ project }) {
   const { selectedProject, isLoading, isError, message } = useSelector((state) => state.projects)
 
   useEffect(() => {
-    if (!localProject) {
-      dispatch(getProjectById(id))
-    }
+    dispatch(getProjectById(id)) // Always fetch full project data
 
     return () => {
       dispatch(resetSelectedProject())
     }
-  }, [id, localProject, dispatch])
+  }, [id, dispatch])
 
-  // Show local if available (loads faster), else wait and get selectedProject
-  // Makes rendering smoother without delays
-  const projectToShow = localProject || selectedProject
+  // Prefer selectedProject if it exists, else fall back to localProject
+  const projectToShow = selectedProject || localProject;
 
   // Get sorted file tree from project
   const fileTree = projectToShow?.fileTree;
@@ -137,24 +135,33 @@ function ViewProject({ project }) {
         </div>
       </div>
 
+      {/* Add Feature Button */}
+      <div className="flex justify-end mb-2">
+        <button
+          className="btn btn-accent btn-sm"
+          onClick={() => document.getElementById('add_feature_modal').showModal()}
+        >
+          ➕ Add Feature
+        </button>
+      </div>
       {/* Features */}
       {projectToShow.features?.length > 0 && (
         <div className="card bg-base-100 shadow-xl mb-6">
           <div className="card-body">
             <h3 className="card-title text-xl font-semibold mb-2">Features Wanted</h3>
-            <ul className="space-y-4">
+            <div className="flex flex-wrap gap-2">
               {projectToShow.features.map((feature, index) => (
-                <li key={index} className="bg-base-200 p-4 rounded-lg">
+                feature && feature.title ? (
                   <Link
+                    key={index}
                     to={`/features/${feature._id}`}
-                    className="text-white text-lg font-semibold hover:underline"
+                    className="badge badge-secondary text-sm hover:underline"
                   >
                     {feature.title}
                   </Link>
-                  <p className="text-white text-sm">{feature.desc}</p>
-                </li>
+                ) : null
               ))}
-            </ul>
+            </div>
           </div>
         </div>
       )}
@@ -236,6 +243,8 @@ function ViewProject({ project }) {
           <pre className="whitespace-pre-wrap text-sm font-mono">{openFileContent}</pre>
         </div>
       )}
+      {/* Add Feature Modal */}
+      <AddFeatureModal projectId={projectToShow._id} />
     </div>
   );
 }

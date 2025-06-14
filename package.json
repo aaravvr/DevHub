@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/Kaushal1101/DevHub#readme",
   "dependencies": {
+    "axios": "^1.9.0",
     "babel-jest": "^30.0.0-beta.3",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
