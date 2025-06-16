@@ -7,13 +7,23 @@ const Feature = require('../models/featureModel');
 // Routes tied to features to indicate each proposal is under a single feature
 
 // @route   GET /api/features/:featureId/proposals
-// @desc    Get proposals
+// @desc    Get all proposals for a specific feature
 // @access  Public
-const getAllProposals = asyncHandler( async (req, res) => {
-  const proposals = await Proposal.find().populate('proposer', 'username full_name role')
+const getProposalsByFeature = asyncHandler(async (req, res) => {
+  try {
+    const proposals = await Proposal.find({
+      feature: req.params.featureId
+    }).populate('proposer', 'username full_name role');
 
-  res.status(200).json({ proposals });
+    //console.log("THE PROPOSALS BLUD:", proposals);
+
+    res.status(200).json({ proposals });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
 });
+
 
 // @route   GET /api/proposals/:id
 // @desc    Get proposals by id
@@ -29,6 +39,7 @@ const getProposalById = asyncHandler( async (req, res) => {
   res.status(200).json(proposal)
 })
 
+
 // @route   GET /api/proposals/user
 // @desc    Get user proposals
 // @access  Public
@@ -37,6 +48,7 @@ const getUserProposals = asyncHandler( async (req, res) => {
 
   res.status(200).json(userProposals)
 })
+
 
 // Builds tree using flat raw tree structure
 const buildFileTree = (flatTree) => {
@@ -78,12 +90,12 @@ const buildFileTree = (flatTree) => {
   return root;
 };
 
+
 // @route   POST /api/features/:featureId/proposals
 // @desc    Create proposals
 // @access  Private
 const createProposal = asyncHandler( async (req, res) => {
-    const { title, desc, notes, attachmentUrl } = req.body;
-    const feature = req.params.featureId;
+    const { title, desc, notes, attachmentUrl, feature } = req.body;
     let status = req.body.status || "Pending";
 
     // console.log("BLUD", req.user);
@@ -116,6 +128,7 @@ const createProposal = asyncHandler( async (req, res) => {
 
     res.status(201).json(proposal);
 });
+
 
 // @route   DELETE /api/proposals/:id
 // @desc    Delete proposals
@@ -174,10 +187,10 @@ const updateProposals = asyncHandler(async (req, res) => {
 */
 
 module.exports = {
-  getAllProposals,
   createProposal,
   deleteProposal,
   //updateProposals,
   getProposalById, 
   getUserProposals,
+  getProposalsByFeature
 };
