@@ -1,18 +1,20 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import axiosInstance from '../api/axiosInstance';
 
 function AddProposalModal({ featureId, onClose }) {
   // Add image/video option later
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [attachmentUrl, setAttachmentUrl] = useState('');
+  const [githubUrl, setGithubUrl] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!title || !description || !attachmentUrl) {
+    if (!title || !description || !attachmentUrl || !githubUrl) {
       toast.error('Please fill in all required fields.');
       return;
     }
@@ -28,12 +30,14 @@ function AddProposalModal({ featureId, onClose }) {
           feature: featureId,
           title: title,
           desc: description,
-          attachmentUrl: attachmentUrl
+          attachmentUrl: attachmentUrl,
+          githubUrl: githubUrl
         },
       );
       setSubmitting(false);
       onClose();
     } catch (err) {
+      console.log("ERROR", err);
       toast.error('Failed to add proposal.');
       setSubmitting(false);
     }
@@ -56,6 +60,17 @@ function AddProposalModal({ featureId, onClose }) {
           <div className="mb-4">
             <label className="block mb-1 font-semibold text-white">Attachment URL</label>
             <input type="text" value={attachmentUrl} onChange={(e) => setAttachmentUrl(e.target.value)} className="w-full border px-3 py-2 rounded bg-[#111827] text-white border-gray-600" required disabled={submitting} />
+          </div>
+          <div className="mb-4">
+            <label className="block mb-1 font-semibold text-white">GitHub URL</label>
+            <input
+              type="text"
+              value={githubUrl}
+              onChange={(e) => setGithubUrl(e.target.value)}
+              className="w-full border px-3 py-2 rounded bg-[#111827] text-white border-gray-600"
+              required
+              disabled={submitting}
+            />
           </div>
           <div className="flex justify-end">
             <button type="button" onClick={onClose} className="mr-4 px-4 py-2 rounded border border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-colors" disabled={submitting} >

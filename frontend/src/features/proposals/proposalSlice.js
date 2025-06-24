@@ -32,6 +32,17 @@ export const getProposalById = createAsyncThunk(
   }
 );
 
+export const deleteProposal = createAsyncThunk(
+  'proposals/delete',
+  async (proposalId, thunkAPI) => {
+    try {
+      await proposalService.deleteProposal(proposalId);
+      return proposalId;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
 
 const proposalSlice = createSlice({
   name: 'proposals',
@@ -66,6 +77,11 @@ const proposalSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
+      })
+      .addCase(deleteProposal.fulfilled, (state, action) => {
+        if (Array.isArray(state.proposals)) {
+          state.proposals = state.proposals.filter(p => p._id !== action.payload);
+        }
       });
   }
 });

@@ -1,4 +1,3 @@
-// frontend/src/pages/FeaturePage.jsx
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -73,9 +72,13 @@ function FeaturePage() {
           {Array.isArray(proposals) ? (
             proposals.length > 0 ? (
               proposals.map((proposal) => (
-                <Link key={proposal._id} to={`/proposals/${proposal._id}`} state={{ proposal }} >
-                  <ProposalCard proposal={proposal} />
-                </Link>
+                <div key={proposal._id}>
+                  <div>
+                    <Link to={`/proposals/${proposal._id}`} state={{ proposal }}>
+                      <ProposalCard proposal={proposal} />
+                    </Link>
+                  </div>
+                </div>
               ))
             ) : (
               <p className="text-gray-500">No proposals available.</p>

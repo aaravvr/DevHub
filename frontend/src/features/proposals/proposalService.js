@@ -1,4 +1,5 @@
 import axios from 'axios';
+import axiosInstance from '../../api/axiosInstance';
 
 const API_URL = '/api/proposals/';
 
@@ -12,6 +13,16 @@ export const getProposalsByFeature = async (featureId) => {
 export const getProposalById = async (proposalId) => {
   const response = await axios.get(API_URL + proposalId);
   return response.data;
+};
+
+export const deleteProposal = async (proposalId) => {
+  await axiosInstance.delete(API_URL + proposalId);
+};
+
+const proposalService = {
+  getProposalsByFeature,
+  getProposalById,
+  deleteProposal,
 };
 
 export default proposalService;

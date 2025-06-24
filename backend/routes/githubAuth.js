@@ -4,6 +4,8 @@ const router = express.Router()
 const User = require('../models/userModel')
 const axios = require('axios');
 
+const { getUserRepos, getRepoBranches, createBranch, commitProposalToBranch } = require('../controller/githubController');
+
 // Redirect to github sign in page
 // router.get('/github', passport.authenticate('github', { scope: ['user:email'] }));
 router.get('/github',
@@ -19,7 +21,7 @@ router.get('/github',
     // Pass state through so we can access it in callback request
     // Cannot put in session, gets wiped by github session
     passport.authenticate('github', {
-      scope: ['user:email'],
+      scope: ['repo', 'user:email'],
       state: localUserId
     })(req, res, next);
   }
@@ -110,5 +112,12 @@ router.post('/verify-repo', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+router.get('/repos', getUserRepos);
+router.get('/repos/:owner/:repo/branches', getRepoBranches);
+
+router.post('/create-branch', createBranch);
+
+router.post('/commit-proposal', commitProposalToBranch);
 
 module.exports = router

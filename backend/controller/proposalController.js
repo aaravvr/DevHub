@@ -95,7 +95,7 @@ const buildFileTree = (flatTree) => {
 // @desc    Create proposals
 // @access  Private
 const createProposal = asyncHandler( async (req, res) => {
-    const { title, desc, notes, attachmentUrl, feature } = req.body;
+    const { title, desc, notes, attachmentUrl, githubUrl, feature } = req.body;
     let status = req.body.status || "Pending";
 
     // console.log("BLUD", req.user);
@@ -114,6 +114,7 @@ const createProposal = asyncHandler( async (req, res) => {
        desc, 
        notes, 
        attachmentUrl, 
+       githubUrl,
        status
     });
 
@@ -134,7 +135,7 @@ const createProposal = asyncHandler( async (req, res) => {
 // @desc    Delete proposals
 // @access  Private
 const deleteProposal = asyncHandler(async (req, res) => {
-    const proposal = await Proposal.findById(req.params.id).populate('proposer', 'username full_name role')
+    const proposal = await Proposal.findById(req.params.id).populate('proposer', 'username full_name role');
 
     if (!proposal) {
       res.status(400);
@@ -146,17 +147,17 @@ const deleteProposal = asyncHandler(async (req, res) => {
       return res.status(401).json({ message: 'Not authorized' });
     };
 
+    // Remove the proposal from the associated feature
+    await Feature.findByIdAndUpdate(
+      proposal.feature,
+      { $pull: { proposals: proposal._id } },
+      { new: true }
+    );
+
     await proposal.deleteOne();
 
-    // Proposal deleted from feature object
-    const featureBody = await Feature.findById(proposal.feature);
-    if (featureBody) {
-      featureBody.proposals = featureBody.proposals.filter(propId => propId.toString() !== proposal._id.toString());
-      await featureBody.save();
-    }
-
-    res.status(200).json({ message: `Proposal with id ${req.params.id} deleted`})
-})
+    res.status(200).json({ message: `Proposal with id ${req.params.id} deleted` });
+});
 
 
 /* 

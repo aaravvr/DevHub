@@ -23,7 +23,10 @@ const proposalSchema = new mongoose.Schema({
   },
   // Notes can be added by anyone part of the project
   notes: [String],
-  attachmentUrl: {
+  mediaUrl: {
+    type: String
+  },
+  githubUrl: {
     type: String
   },
   status: {
