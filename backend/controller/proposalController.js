@@ -95,7 +95,7 @@ const buildFileTree = (flatTree) => {
 // @desc    Create proposals
 // @access  Private
 const createProposal = asyncHandler( async (req, res) => {
-    const { title, desc, notes, attachmentUrl, githubUrl, feature } = req.body;
+    const { title, desc, notes, attachmentUrl, githubUrl, feature, branchName } = req.body;
     let status = req.body.status || "Pending";
 
     // console.log("BLUD", req.user);
@@ -115,6 +115,7 @@ const createProposal = asyncHandler( async (req, res) => {
        notes, 
        attachmentUrl, 
        githubUrl,
+       branchName: branchName || 'main',
        status
     });
 

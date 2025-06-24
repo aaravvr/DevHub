@@ -9,12 +9,13 @@ function AddProposalModal({ featureId, onClose }) {
   const [description, setDescription] = useState('');
   const [attachmentUrl, setAttachmentUrl] = useState('');
   const [githubUrl, setGithubUrl] = useState('');
+  const [branchName, setBranchName] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!title || !description || !attachmentUrl || !githubUrl) {
+    if (!title || !description || !attachmentUrl || !githubUrl || !branchName) {
       toast.error('Please fill in all required fields.');
       return;
     }
@@ -31,7 +32,8 @@ function AddProposalModal({ featureId, onClose }) {
           title: title,
           desc: description,
           attachmentUrl: attachmentUrl,
-          githubUrl: githubUrl
+          githubUrl: githubUrl,
+          branchName: branchName
         },
       );
       setSubmitting(false);
@@ -67,6 +69,17 @@ function AddProposalModal({ featureId, onClose }) {
               type="text"
               value={githubUrl}
               onChange={(e) => setGithubUrl(e.target.value)}
+              className="w-full border px-3 py-2 rounded bg-[#111827] text-white border-gray-600"
+              required
+              disabled={submitting}
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block mb-1 font-semibold text-white">Branch Name</label>
+            <input
+              type="text"
+              value={branchName}
+              onChange={(e) => setBranchName(e.target.value)}
               className="w-full border px-3 py-2 rounded bg-[#111827] text-white border-gray-600"
               required
               disabled={submitting}

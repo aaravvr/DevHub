@@ -26,7 +26,7 @@ const ProposalPage = () => {
     const commitData = {
       owner: proposal.owner, // assuming proposal has this
       repo: proposal.repo,   // assuming proposal has this
-      branch: proposal.branchName || `proposal-${proposal._id}`,
+      branch: proposal.branchName, // use the saved branch
       message: "Committing proposal changes",
       content: proposal.content || btoa("Example content"), // base64 string
       path: proposal.filePath || "README.md",

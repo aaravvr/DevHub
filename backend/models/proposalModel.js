@@ -29,6 +29,11 @@ const proposalSchema = new mongoose.Schema({
   githubUrl: {
     type: String
   },
+  branchName: {
+    type: String,
+    default: 'main',
+    required: true
+  },
   status: {
     type: String,
     enum: ['Pending', 'Approved', 'Rejected'],
