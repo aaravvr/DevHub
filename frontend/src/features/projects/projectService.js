@@ -45,6 +45,11 @@ const getMyProjects = async () => {
   return response.data
 }
 
+export const addComment = async ({ projectId, text }) => {
+  const response = await axiosInstance.post(`/api/projects/${projectId}/comments`, { text });
+  return response.data;
+};
+
 const projectService = {
   createProject,
   getAllProjects,
@@ -53,6 +58,7 @@ const projectService = {
   getUserProjects,
   updateProject,
   getMyProjects,
+  addComment
 }
 
 export default projectService

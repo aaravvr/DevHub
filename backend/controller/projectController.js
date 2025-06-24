@@ -19,7 +19,8 @@ const getAllProjects = asyncHandler( async (req, res) => {
 const getProjectById = asyncHandler( async (req, res) => {
   const project = await Project.findById(req.params.id)
     .populate('creator', 'username full_name role')
-    .populate('features', 'title desc');
+    .populate('features', 'title desc')
+    .populate('comments.user', 'username full_name');
 
     console.log('PROJECT HERE:', project)
 
@@ -188,6 +189,38 @@ const getProjectsByLoggedInUser = asyncHandler(async (req, res) => {
   res.status(200).json(projects);
 })
 
+// @desc    Add comment to project
+// @route   POST /api/projects/:id/comments
+// @access  Private
+const addCommentToProject = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { text } = req.body;
+
+  if (!text || text.trim() === '') {
+    return res.status(400).json({ message: 'Comment cannot be empty' });
+  }
+
+  const project = await Project.findById(id);
+  if (!project) {
+    return res.status(404).json({ message: 'Project not found' });
+  }
+
+  const newComment = {
+    user: req.user._id,
+    text,
+    createdAt: new Date()
+  };
+
+  project.comments.push(newComment);
+  await project.save();
+
+  await project.populate('comments.user', 'username full_name');
+
+  // Return the newly added comment
+  res.status(201).json(project.comments[project.comments.length - 1]);
+});
+
+
 module.exports = {
   getAllProjects,
   createProject,
@@ -195,5 +228,6 @@ module.exports = {
   updateProjects,
   getProjectById, 
   getUserProjects,
-  getProjectsByLoggedInUser
+  getProjectsByLoggedInUser,
+  addCommentToProject
 };

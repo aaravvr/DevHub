@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getAllProjects, createProject, getProjectById, updateProjects, deleteProjects, getUserProjects, getProjectsByLoggedInUser } = require('../controller/projectController');
+const { getAllProjects, createProject, getProjectById, updateProjects, deleteProjects, getUserProjects, getProjectsByLoggedInUser, addCommentToProject } = require('../controller/projectController');
 const { protect } = require('../middleware/authMiddleware');
 
 
@@ -12,6 +12,9 @@ router.post('/', protect, createProject);
 
 // GET /api/projects/my
 router.get('/my', protect, getProjectsByLoggedInUser);
+
+// POST /api/projects/:id/comments
+router.post('/:id/comments', protect, addCommentToProject);
 
 // /api/projects/:id
 router.route('/:id')

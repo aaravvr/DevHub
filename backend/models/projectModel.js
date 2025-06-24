@@ -61,6 +61,22 @@ const projectSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Feature'
     }],
+    // Add comments field to support user discussions
+    comments: [{
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
+        },
+        text: {
+            type: String,
+            required: true
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now
+        }
+    }]
 }, {timestamps: true});
 
 module.exports = mongoose.model('Project', projectSchema)
