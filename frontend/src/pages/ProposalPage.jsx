@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { deleteProposal } from '../features/proposals/proposalSlice';
@@ -9,29 +9,73 @@ const ProposalPage = () => {
   const location = useLocation();
   const passedProposal = location.state?.proposal;
 
-  console.log("STATE", location.state)
+  console.log("STATE", location.state);
 
   const { proposals } = useSelector((state) => state.proposals);
-  const proposalArray = Array.isArray(proposals) ? proposals : [];
-  const proposalFromState = proposalArray.find((p) => p._id === proposalId);
-  const proposal = passedProposal || proposalFromState;
-  console.log("PROP", proposalId)
+  const { user } = useSelector((state) => state.auth);
+
+  // Search proposal if not passed in local storage
+  let proposal = passedProposal;
+  if (!proposal) {
+    proposal = proposals.find((p) => p._id === proposalId);
+  }
+
+  console.log("PROP", proposalId);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // Used in case cannot get repo info readily
+  const parseRepo = (url) => {
+    try {
+      const { pathname } = new URL(url);
+      // pathname: "/owner/repo" or "/owner/repo.git"
+      const [, owner, repoWithGit] = pathname.split('/');
+      return {
+        owner,
+        repo: repoWithGit?.replace(/\.git$/, ''),
+      };
+    } catch {
+      return { owner: '', repo: '' };
+    }
+  };
+
   const handleCommit = () => {
     if (!proposal) return;
 
+    // Get repo owner and name
+    let proposalOwner = proposal.owner || '';
+    let proposalName  = proposal.repo  || '';
+
+    // Fallback to parseRepo if owner and name info not available 
+    if (!proposalOwner || !proposalName) {
+      const parsed = parseRepo(proposal.githubUrl);
+      proposalOwner = parsed.owner;
+      proposalName  = parsed.repo;
+    }
+
+    if (!proposalOwner || !proposalName) {
+      alert('Cannot find repository owner or name.');
+      return;
+    }
+
+    // Ensure content is there, or else set default README
+    const content  =
+      proposal.content ||
+      btoa(`# ${proposal.title}\n Merged via DevHub proposal ${proposal._id}`);
+    
+    const proposalId = proposal._id;
+    Ex
     const commitData = {
-      owner: proposal.owner, // assuming proposal has this
-      repo: proposal.repo,   // assuming proposal has this
-      branch: proposal.branchName, // use the saved branch
-      message: "Committing proposal changes",
-      content: proposal.content || btoa("Example content"), // base64 string
-      path: proposal.filePath || "README.md",
+      proposalId,
+      proposalOwner,
+      proposalName,
+      branchName: proposal.branchName,
+      content,
+      commitMessage: `Apply proposal "${proposal.title}"`,
     };
 
+    console.log('Commit payload:', commitData);
     dispatch(commitCode(commitData));
   };
 
@@ -46,6 +90,10 @@ const ProposalPage = () => {
   if (!proposal) {
     return <div className="text-white p-8">Proposal not found.</div>;
   }
+
+  useEffect(() => {
+    console.log('Proposal object in page', proposal);
+  }, [proposal]);
 
   return (
     <div className="bg-gray-900 min-h-screen text-white p-8">
@@ -112,7 +160,12 @@ const ProposalPage = () => {
           </button>
           <button
             onClick={handleCommit}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-4"
+            disabled={!proposal.githubUrl}
+            className={`${
+              proposal.githubUrl
+                ? 'bg-blue-600 hover:bg-blue-700'
+                : 'bg-gray-600 cursor-not-allowed'
+            } text-white font-bold py-2 px-4 rounded ml-4`}
           >
             Commit to GitHub
           </button>

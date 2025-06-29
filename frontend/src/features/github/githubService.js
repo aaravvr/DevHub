@@ -1,16 +1,20 @@
 import axiosInstance from '../../api/axiosInstance';
 
-// Commit code to a specific proposal branch
-export const commitToProposalBranch = async ({ repoOwner, repoName, branchName, filePath, content, commitMessage, accessToken }) => {
-  const response = await axiosInstance.post('/api/github/commit', {
-    repoOwner,
-    repoName,
-    branchName,
-    filePath,
-    content,
-    commitMessage,
-    accessToken,
-  });
 
-  return response.data;
+export const commitToProposalBranch = async (payload) => {
+  let token;
+  try {
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    token = storedUser?.token;
+  } catch (error) {
+    token = undefined;
+  }
+
+  // 
+  const config = { headers: { Authorization: `Bearer ${token}` } };
+
+  const { data } = await axiosInstance.post('/api/github/commit-proposal', payload, config);
+  return data;
 };
+
+export default { commitToProposalBranch };

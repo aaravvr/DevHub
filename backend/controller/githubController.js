@@ -1,6 +1,10 @@
 // controller/githubController.js
 const axios = require('axios');
 
+const Proposal = require('../models/proposalModel');
+const Feature = require('../models/featureModel');
+const Project = require('../models/projectModel');
+
 // @desc    Verifies if the user owns the GitHub repo
 // @route   POST /api/github/verify-repo
 // @access  Private
@@ -66,161 +70,164 @@ const getRepoBranches = async (req, res) => {
   }
 };
 
-// @desc    Create a new branch in a GitHub repo
-// @route   POST /api/github/create-branch
-// @access  Private
-const createBranch = async (req, res) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  const { repo, newBranchName, baseBranch } = req.body;
-
-  if (!token) {
-    return res.status(401).json({ message: 'Missing token' });
-  }
-
-  try {
-    // Find the user by GitHub token
-    const user = await require('../models/userModel').findOne({ 'github.access_token': token });
-
-    if (!user || !user.github || !user.github.username) {
-      return res.status(403).json({ message: 'GitHub user not linked or not found' });
-    }
-
-    const owner = user.github.username;
-
-    // Step 1: Get the SHA of the base branch
-    const branchRes = await axios.get(
-      `https://api.github.com/repos/${owner}/${repo}/git/ref/heads/${baseBranch}`,
-      {
-        headers: { Authorization: `token ${token}` },
-      }
-    );
-
-    const sha = branchRes.data.object.sha;
-
-    // Step 2: Create a new reference (branch)
-    const createRes = await axios.post(
-      `https://api.github.com/repos/${owner}/${repo}/git/refs`,
-      {
-        ref: `refs/heads/${newBranchName}`,
-        sha: sha,
-      },
-      {
-        headers: { Authorization: `token ${token}` },
-      }
-    );
-
-    res.status(201).json({ message: 'Branch created successfully', data: createRes.data });
-  } catch (err) {
-    console.error('Branch creation error:', err?.response?.data || err.message);
-    res.status(500).json({ message: 'Failed to create branch', error: err.message });
-  }
-};
 
 // @desc    Commit a file to a branch in a GitHub repo
 // @route   POST /api/github/commit-proposal
 // @access  Private
 const commitProposalToBranch = async (req, res) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  const { repo, branch, filePath, content, commitMessage } = req.body;
+  const userId = req.user.id;
+  const user = await require('../models/userModel').findById(userId);
+  const token = user?.github?.access_token;
+
+  // Get proposal along with the feature it's under
+  const proposalId = req.body.proposalId;
+  const proposal = await Proposal.findById(proposalId).select('feature');   // { feature: ObjectId }
+  if (!proposal) throw new Error('Proposal not found');
+
+
+  // Get project repo that we want to commit to
+  const feature = await Feature.findById(proposal.feature).populate('project', 'github_repo'); 
+  if (!feature || !feature.project) throw new Error('Feature or linked project not found');
+
+  console.log("FT", feature);
+  const { owner: projectOwner, repo: projectRepo, branch: projectBranch } = feature.project.github_repo;
+  if (!projectBranch) projectBranch = 'main';
+
+  console.log("CHECK", projectOwner, projectBranch);
+
+  const {
+    proposalOwner,
+    proposalName,
+    // Rename to proposalBranch to diffrentiate with projectBranch
+    branchName: proposalBranch,
+    content,
+    commitMessage,
+  } = req.body;
 
   if (!token) {
     return res.status(401).json({ message: 'Missing token' });
   }
 
-  try {
-    const user = await require('../models/userModel').findOne({ 'github.access_token': token });
+  if (!token || !user?.github?.username) {
+    return res.status(403).json({ message: 'GitHub token or username not found' });
+  }
 
-    if (!user || !user.github || !user.github.username) {
-      return res.status(403).json({ message: 'GitHub user not linked or not found' });
+  try {
+    // Get latest commit made on project repo
+    const targetRef = await axios.get(
+      `https://api.github.com/repos/${projectOwner}/${projectRepo}/git/ref/heads/${projectBranch}`,
+      { headers: { Authorization: `token ${token}` } }
+    );
+    const targetLatestSha = targetRef.data.object.sha;
+
+    // Get latest commit of the proposal repo
+    const proposalRef = await axios.get(
+      `https://api.github.com/repos/${proposalOwner}/${proposalName}/git/ref/heads/${proposalBranch}`,
+      { headers: { Authorization: `token ${token}` } }
+    );
+    const proposalCommitSha = proposalRef.data.object.sha;
+
+    // Get tree SHA of folder and files in proposal
+    const proposalCommit = await axios.get(
+      `https://api.github.com/repos/${proposalOwner}/${proposalName}/git/commits/${proposalCommitSha}`,
+      { headers: { Authorization: `token ${token}` } }
+    );
+    const proposalTreeSha = proposalCommit.data.tree.sha;
+
+    // Fetch the full tree from the proposal repo
+    const proposalTreeResp = await axios.get(
+      `https://api.github.com/repos/${proposalOwner}/${proposalName}/git/trees/${proposalTreeSha}?recursive=1`,
+      { headers: { Authorization: `token ${token}` } }
+    );
+
+    // Re‑create each blob/file inside the project repo
+    const treeEntries = [];
+
+    for (const item of proposalTreeResp.data.tree) {
+      // Skip folders since they can't be directly downloaded
+      if (item.type !== 'blob') continue;     
+
+      // Download blob content from proposal repo
+      const blobContentResp = await axios.get(
+        `https://api.github.com/repos/${proposalOwner}/${proposalName}/git/blobs/${item.sha}`,
+        { headers: { Authorization: `token ${token}` } }
+      );
+
+      const { content: base64Content, encoding } = blobContentResp.data;
+
+      // Upload this blob into project repo
+      const newBlobResp = await axios.post(
+        `https://api.github.com/repos/${projectOwner}/${projectRepo}/git/blobs`,
+        {
+          content: base64Content,
+          encoding: 'base64',
+        },
+        { headers: { Authorization: `token ${token}` } }
+      );
+
+      // Add blob to tree structure which gets pushed to project later
+      treeEntries.push({
+        path: item.path,
+        mode: '100644',
+        type: 'blob',
+        sha: newBlobResp.data.sha,
+      });
     }
 
-    const owner = user.github.username;
-
-    // Get the SHA of the latest commit on the branch
-    const refRes = await axios.get(
-      `https://api.github.com/repos/${owner}/${repo}/git/ref/heads/${branch}`,
-      {
-        headers: { Authorization: `token ${token}` },
-      }
+    // Create new tree inside the project repo to mirror proposal
+    const projectTreeRes = await axios.post(
+      `https://api.github.com/repos/${projectOwner}/${projectRepo}/git/trees`,
+      { tree: treeEntries },
+      { headers: { Authorization: `token ${token}` } }
     );
 
-    const latestCommitSha = refRes.data.object.sha;
+    // Get SHA of project tree just created for new commit
+    const projectTreeSha = projectTreeRes.data.sha;
 
-    // Get the tree SHA of the latest commit
-    const commitRes = await axios.get(
-      `https://api.github.com/repos/${owner}/${repo}/git/commits/${latestCommitSha}`,
-      {
-        headers: { Authorization: `token ${token}` },
-      }
-    );
-
-    const baseTreeSha = commitRes.data.tree.sha;
-
-    // Create a new blob with file content
-    const blobRes = await axios.post(
-      `https://api.github.com/repos/${owner}/${repo}/git/blobs`,
-      {
-        content,
-        encoding: 'utf-8',
-      },
-      {
-        headers: { Authorization: `token ${token}` },
-      }
-    );
-
-    const blobSha = blobRes.data.sha;
-
-    // Create a new tree with the updated file
-    const treeRes = await axios.post(
-      `https://api.github.com/repos/${owner}/${repo}/git/trees`,
-      {
-        base_tree: baseTreeSha,
-        tree: [
-          {
-            path: filePath,
-            mode: '100644',
-            type: 'blob',
-            sha: blobSha,
-          },
-        ],
-      },
-      {
-        headers: { Authorization: `token ${token}` },
-      }
-    );
-
-    const newTreeSha = treeRes.data.sha;
-
-    // Create a new commit
+    // Create commit in the project repo using this tree
     const newCommitRes = await axios.post(
-      `https://api.github.com/repos/${owner}/${repo}/git/commits`,
+      `https://api.github.com/repos/${projectOwner}/${projectRepo}/git/commits`,
       {
-        message: commitMessage,
-        tree: newTreeSha,
-        parents: [latestCommitSha],
+        message: commitMessage || `Import proposal ${proposalName}`,
+        tree: projectTreeSha,     
+        parents: [targetLatestSha],
       },
-      {
-        headers: { Authorization: `token ${token}` },
-      }
+      { headers: { Authorization: `token ${token}` } }
     );
 
+    // Get SHA of new latest commit
     const newCommitSha = newCommitRes.data.sha;
 
-    // Update the reference of the branch to point to the new commit
+    // Update the project branch pointer to new commit
     await axios.patch(
-      `https://api.github.com/repos/${owner}/${repo}/git/refs/heads/${branch}`,
-      {
-        sha: newCommitSha,
-      },
-      {
-        headers: { Authorization: `token ${token}` },
-      }
+      `https://api.github.com/repos/${projectOwner}/${projectRepo}/git/refs/heads/${projectBranch}`,
+      { sha: newCommitSha },
+      { headers: { Authorization: `token ${token}` } }
     );
 
-    res.status(200).json({ message: 'Commit pushed successfully' });
+    res.status(200).json({ message: 'Proposal imported successfully' });
+    console.log('Success: Imported full tree from proposal repo into project repo.');
+
   } catch (err) {
-    console.error('Commit error:', err?.response?.data || err.message);
-    res.status(500).json({ message: 'Failed to commit', error: err.message });
+    console.error('Import error:', err?.response?.data || err.message);
+    res.status(500).json({ message: 'Failed to import proposal', error: err.message })
+  }
+};
+
+// @desc    Get GitHub access token for the logged-in user
+// @route   GET /api/github/token
+// @access  Private
+const getGithubToken = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await require('../models/userModel').findById(userId);
+    if (!user || !user.github || !user.github.access_token) {
+      return res.status(404).json({ message: 'GitHub token not found' });
+    }
+    res.status(200).json({ access_token: user.github.access_token });
+  } catch (err) {
+    console.error('Error fetching GitHub token:', err.message);
+    res.status(500).json({ message: 'Failed to fetch GitHub token' });
   }
 };
 
@@ -229,5 +236,6 @@ module.exports = {
   getUserRepos,
   getRepoBranches,
   createBranch,
-  commitProposalToBranch
+  commitProposalToBranch,
+  getGithubToken
 };

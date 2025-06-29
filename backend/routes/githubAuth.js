@@ -3,6 +3,7 @@ const passport = require('passport')
 const router = express.Router()
 const User = require('../models/userModel')
 const axios = require('axios');
+const { protect } = require('../middleware/authMiddleware');
 
 const { getUserRepos, getRepoBranches, createBranch, commitProposalToBranch } = require('../controller/githubController');
 
@@ -51,7 +52,7 @@ router.get('/github/callback',
       // Keep redirect at the end so test cases run properly
       if (!githubUser) return res.redirect('/');
 
-      // console.log("USERNAME", githubUser.username)
+      // console.log("USERNAME", githubUser.username);
 
       // Ensures same user doesn't create two accounts
       const originalUser = await User.findOne({ 'github.id': githubUser.id });
@@ -118,6 +119,6 @@ router.get('/repos/:owner/:repo/branches', getRepoBranches);
 
 router.post('/create-branch', createBranch);
 
-router.post('/commit-proposal', commitProposalToBranch);
+router.post('/commit-proposal', protect, commitProposalToBranch);
 
 module.exports = router
