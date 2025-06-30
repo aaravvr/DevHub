@@ -117,8 +117,6 @@ router.post('/verify-repo', async (req, res) => {
 router.get('/repos', getUserRepos);
 router.get('/repos/:owner/:repo/branches', getRepoBranches);
 
-router.post('/create-branch', createBranch);
-
 router.post('/commit-proposal', protect, commitProposalToBranch);
 
 module.exports = router

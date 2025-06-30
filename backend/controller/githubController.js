@@ -235,7 +235,6 @@ module.exports = {
   verifyRepo,
   getUserRepos,
   getRepoBranches,
-  createBranch,
   commitProposalToBranch,
   getGithubToken
 };
