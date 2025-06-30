@@ -110,6 +110,18 @@ export const getMyProjects = createAsyncThunk(
     }
 ) 
 
+export const addComment = createAsyncThunk(
+  'projects/addComment',
+  async ({ projectId, text }, thunkAPI) => {
+    try {
+      return await projectService.addComment({ projectId, text });
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+
 export const projectSlice = createSlice({
     name: 'project',
     initialState,
@@ -214,6 +226,22 @@ export const projectSlice = createSlice({
             .addCase(getMyProjects.fulfilled, (state, action) => {
                 state.myProjects = action.payload
             })
+            .addCase(addComment.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(addComment.fulfilled, (state, action) => {
+                state.isLoading = false;
+                // Append the new comment to the selected project if it exists
+                if (state.selectedProject?.comments) {
+                    state.selectedProject.comments.push(action.payload);
+                }
+            })
+            .addCase(addComment.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            });
+
     }
 })
 
