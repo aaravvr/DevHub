@@ -44,6 +44,20 @@ export const deleteProposal = createAsyncThunk(
   }
 );
 
+export const editProposal = createAsyncThunk(
+  'proposals/edit',
+  async ({ id, data }, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      return await proposalService.updateProposal(id, data, token);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || error.message
+      );
+    }
+  }
+);
+
 const proposalSlice = createSlice({
   name: 'proposals',
   initialState,
@@ -82,6 +96,26 @@ const proposalSlice = createSlice({
         if (Array.isArray(state.proposals)) {
           state.proposals = state.proposals.filter(p => p._id !== action.payload);
         }
+      })
+      .addCase(editProposal.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(editProposal.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        // replace in list
+        state.proposals = state.proposals.map((p) =>
+          p._id === action.payload._id ? action.payload : p
+        );
+        // if currently selected, update it
+        if (state.selectedProposal && state.selectedProposal._id === action.payload._id) {
+          state.selectedProposal = action.payload;
+        }
+      })
+      .addCase(editProposal.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
       });
   }
 });

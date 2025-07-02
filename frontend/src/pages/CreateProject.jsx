@@ -57,7 +57,6 @@ function CreateProject() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-
   const addTech = () => {
     if (techInput.trim()) {
       // Adds new techInput to previous array of tech stack stored in formData
@@ -125,6 +124,7 @@ function CreateProject() {
       return;
     }
 
+    console.log("TOKEN ACCESS", user)
     // Make sure user owns repo
     try {
       await axios.post('/api/github/verify-repo', {
@@ -175,11 +175,9 @@ function CreateProject() {
             {formData.tech_stack.map((tech, index) => (
               <span key={index} className="badge mr-1 flex items-center">
                 {tech}
-                <button
-                  type="button"
-                  onClick={() => removeTech(index)}
-                  className="ml-1 text-red-500 hover:text-red-700"
-                >X</button>
+                <button type="button" onClick={() => removeTech(index)} className="ml-1 text-red-500 hover:text-red-700" >
+                  X
+                </button>
               </span>
             ))}
           </div>
@@ -192,11 +190,9 @@ function CreateProject() {
             {formData.tags.map((tag, index) => (
               <span key={index} className="badge mr-1 flex items-center">
                 {tag}
-                <button
-                  type="button"
-                  onClick={() => removeTag(index)}
-                  className="ml-1 text-red-500 hover:text-red-700"
-                >X</button>
+                <button type="button" onClick={() => removeTag(index)} className="ml-1 text-red-500 hover:text-red-700" >
+                  X
+                </button>
               </span>
             ))}
           </div>
@@ -205,57 +201,39 @@ function CreateProject() {
         {/* Index included to keep track of features when updating */}
         {formData.features.map((feature, index) => (
           <div key={index} className="space-y-1">
-            <input
-              type="text"
-              placeholder="Feature Title"
-              value={feature.title}
-              onChange={(e) => updateFeature(index, 'title', e.target.value)}
-              className="input input-bordered w-full"
-            />
-            <input
-              type="text"
-              placeholder="Feature Description"
-              value={feature.desc}
-              onChange={(e) => updateFeature(index, 'desc', e.target.value)}
-              className="input input-bordered w-full"
-            />
-            <button
-              type="button"
-              onClick={() => removeFeature(index)}
-              className="btn btn-sm btn-error"
-            >Remove</button>
+            <input type="text" placeholder="Feature Title" value={feature.title} onChange={(e) => updateFeature(index, 'title', e.target.value)} className="input input-bordered w-full" />
+
+            <input type="text" placeholder="Feature Description" value={feature.desc} onChange={(e) => updateFeature(index, 'desc', e.target.value)} className="input input-bordered w-full" />
+
+            <button type="button" onClick={() => removeFeature(index)} className="btn btn-sm btn-error" >
+              Remove
+            </button>
           </div>
         ))}
+
         <button type="button" onClick={addFeature} className="btn">Add Feature</button>
 
-        <input
-          type="text"
-          value={formData.github_repo.url}
-          placeholder="GitHub Repo URL"
+        <input type="text" value={formData.github_repo.url} placeholder="GitHub Repo URL"
           onChange={(e) =>
             setFormData({
               ...formData,
               github_repo: { ...formData.github_repo, url: e.target.value }
             })
           }
-          className="input input-bordered w-full"
-        />
-        <input
-          type="text"
-          value={formData.github_repo.branch}
-          placeholder="Branch Name (default: main)"
+          className="input input-bordered w-full" />
+
+        <input type="text" value={formData.github_repo.branch} placeholder="Branch Name (default: main)"
           onChange={(e) =>
             setFormData({
               ...formData,
               github_repo: { ...formData.github_repo, branch: e.target.value }
             })
           }
-          className="input input-bordered w-full"
-        />
+          className="input input-bordered w-full" />
 
         <button type="submit" className="btn btn-primary">Create Project</button>
+
       </form>
-      {/* Used to show errors when input incomplete */}
       <ToastContainer />
     </div>
   );

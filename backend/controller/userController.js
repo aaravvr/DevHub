@@ -43,6 +43,7 @@ const registerUser = asyncHandler(async(req, res) => {
         email,
         password: hashedPassword,
         role,
+        github,
         techstack
     })
 

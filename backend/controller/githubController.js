@@ -9,9 +9,11 @@ const Project = require('../models/projectModel');
 // @route   POST /api/github/verify-repo
 // @access  Private
 const verifyRepo = async (req, res) => {
+  console.log("BLUD")
   const { owner, repo } = req.body;
   const token = req.headers.authorization?.split(' ')[1];
 
+  console.log("TOKEN", token)
   if (!token) {
     return res.status(401).json({ message: 'Missing token' });
   }
@@ -75,6 +77,7 @@ const getRepoBranches = async (req, res) => {
 // @route   POST /api/github/commit-proposal
 // @access  Private
 const commitProposalToBranch = async (req, res) => {
+  console.time("Commit Duration");
   const userId = req.user.id;
   const user = await require('../models/userModel').findById(userId);
   const token = user?.github?.access_token;
@@ -112,6 +115,7 @@ const commitProposalToBranch = async (req, res) => {
     return res.status(403).json({ message: 'GitHub token or username not found' });
   }
 
+  console.log("START");
   try {
     // Get latest commit made on project repo
     const targetRef = await axios.get(
@@ -205,8 +209,23 @@ const commitProposalToBranch = async (req, res) => {
       { headers: { Authorization: `token ${token}` } }
     );
 
-    res.status(200).json({ message: 'Proposal imported successfully' });
     console.log('Success: Imported full tree from proposal repo into project repo.');
+    console.timeEnd("Commit Duration");
+
+    // Update proposal status
+    proposal.status = 'Approved';
+    proposal.acceptedAt = new Date();
+    await proposal.save();
+
+    // Add to project's applied proposals
+    feature.project.appliedProposals.push({
+      proposal: proposal._id,
+      commitSha: newCommitSha,
+      appliedAt: new Date()
+    });
+    await feature.project.save();
+
+    res.status(200).json({ message: 'Proposal imported successfully' });
 
   } catch (err) {
     console.error('Import error:', err?.response?.data || err.message);

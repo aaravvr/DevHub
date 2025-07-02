@@ -19,10 +19,18 @@ export const deleteProposal = async (proposalId) => {
   await axiosInstance.delete(API_URL + proposalId);
 };
 
+// Update a proposal (allowed only while Pending)
+export const updateProposal = async (proposalId, data, token) => {
+  const config = { headers: { Authorization: `Bearer ${token}` } };
+  const response = await axiosInstance.patch(API_URL + proposalId, data, config);
+  return response.data;
+};
+
 const proposalService = {
   getProposalsByFeature,
   getProposalById,
   deleteProposal,
+  updateProposal,
 };
 
 export default proposalService;

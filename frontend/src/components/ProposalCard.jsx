@@ -4,7 +4,12 @@ function ProposalCard({ proposal }) {
   }
 
   return (
-    <div className="bg-zinc-900 text-white shadow-md rounded p-4 mb-4">
+    <div className="bg-zinc-900 text-white shadow-md rounded p-4 mb-4 relative">
+      <div className={`absolute top-2 right-2 px-2 py-1 rounded text-xs font-bold ${
+        proposal.status === 'Approved' ? 'bg-green-600 text-white' : 'bg-yellow-500 text-black'
+      }`}>
+        {proposal.status === 'Approved' ? 'Accepted' : 'Pending'}
+      </div>
       <h2 className="text-xl font-semibold mb-2">{proposal.title}</h2>
       <p className="text-gray-300 mb-2">{proposal.desc}</p>
       <div className="text-sm text-gray-400 mb-1">Proposer: <span className="font-medium">{proposal.proposer?.username || proposal.proposer}</span></div>

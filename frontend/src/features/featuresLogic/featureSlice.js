@@ -42,6 +42,21 @@ export const deleteFeature = createAsyncThunk(
   }
 );
 
+// Mark Feature Completed
+export const markFeatureCompleted = createAsyncThunk(
+  'features/complete',
+  async (id, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      return await featureService.markFeatureCompleted(id, token);
+    } catch (error) {
+      const message =
+        (error.response?.data?.message) || error.message || 'Failed to complete';
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const featureSlice = createSlice({
   name: 'features',
   initialState,
@@ -77,6 +92,20 @@ export const featureSlice = createSlice({
         state.features = state.features.filter(f => f._id !== action.payload);
       })
       .addCase(deleteFeature.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(markFeatureCompleted.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(markFeatureCompleted.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        const updated = action.payload;
+        state.features = state.features.map(f => f._id === updated._id ? updated : f);
+      })
+      .addCase(markFeatureCompleted.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
