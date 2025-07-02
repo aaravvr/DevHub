@@ -39,6 +39,9 @@ const proposalSchema = new mongoose.Schema({
     enum: ['Pending', 'Approved', 'Rejected'],
     default: 'Pending'
   },
+  acceptedAt: {
+    type: Date
+  },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Proposal', proposalSchema);

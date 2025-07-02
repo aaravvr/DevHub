@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { deleteProposal } from '../features/proposals/proposalSlice';
+import { deleteProposal, editProposal } from '../features/proposals/proposalSlice';
 import { commitCode } from '../features/github/githubSlice';
+import UpdateProposalModal from '../components/UpdateProposalModal';
 
 const ProposalPage = () => {
   const { proposalId } = useParams();
@@ -24,6 +25,16 @@ const ProposalPage = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  // State handling to edit proposal
+  const [showEdit, setShowEdit] = useState(false);
+  const [formData, setFormData] = useState({
+    title: proposal?.title || '',
+    desc: proposal?.desc || '',
+    mediaUrl: proposal?.mediaUrl || '',
+    githubUrl: proposal?.githubUrl || '',
+    branchName: proposal?.branchName || '',
+  });
 
   // Used in case cannot get repo info readily
   const parseRepo = (url) => {
@@ -65,7 +76,7 @@ const ProposalPage = () => {
       btoa(`# ${proposal.title}\n Merged via DevHub proposal ${proposal._id}`);
     
     const proposalId = proposal._id;
-    Ex
+
     const commitData = {
       proposalId,
       proposalOwner,
@@ -77,6 +88,25 @@ const ProposalPage = () => {
 
     console.log('Commit payload:', commitData);
     dispatch(commitCode(commitData));
+  };
+
+  // To update proposal info after update 
+  const handleEditSubmit = (e) => {
+    e.preventDefault();
+    dispatch(editProposal({ id: proposal._id, data: formData }))
+      .unwrap()
+      .then(() => {
+        // Fetch new proposal with edits from db
+        fetch(`/api/proposals/${proposal._id}`)
+          .then(res => res.json())
+          .then(freshProposal => {
+            navigate(`/proposals/${freshProposal._id}`, {
+              // Update local storage with new proposal info
+              state: { proposal: freshProposal },
+              replace: true,
+            });
+          });
+      });
   };
 
   const handleDelete = () => {
@@ -105,12 +135,7 @@ const ProposalPage = () => {
 
         <div className="bg-gray-800 p-6 rounded-lg shadow-md">
           <h2 className="text-2xl font-semibold mb-2">GitHub Repository</h2>
-          <a
-            href={proposal.githubUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-400 underline break-all"
-          >
+          <a href={proposal.githubUrl} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline break-all" >
             {proposal.githubUrl}
           </a>
         </div>
@@ -144,7 +169,7 @@ const ProposalPage = () => {
             <strong>Proposer:</strong> {proposal.proposer?.username || 'Unknown'}
           </div>
           <div>
-            <strong>Feature:</strong> {proposal.feature?.title || proposal.feature}
+            <strong>Feature:</strong> {typeof proposal.feature === 'object' ? proposal.feature.title : proposal.feature}
           </div>
           <div>
             <strong>Status:</strong> {proposal.status || 'Pending'}
@@ -152,25 +177,35 @@ const ProposalPage = () => {
         </div>
 
         <div className="bg-gray-800 p-6 rounded-lg shadow-md text-right">
-          <button
-            onClick={handleDelete}
-            className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Delete Proposal
-          </button>
-          <button
-            onClick={handleCommit}
-            disabled={!proposal.githubUrl}
-            className={`${
-              proposal.githubUrl
-                ? 'bg-blue-600 hover:bg-blue-700'
-                : 'bg-gray-600 cursor-not-allowed'
-            } text-white font-bold py-2 px-4 rounded ml-4`}
-          >
-            Commit to GitHub
-          </button>
+          {proposal.status === 'Approved' ? (
+            <div className="text-green-400 font-semibold">
+              Accepted at {proposal.acceptedAt ? new Date(proposal.acceptedAt).toLocaleString() : 'an unknown time'}
+            </div>
+          ) : (
+            <>
+              {user && proposal.proposer?._id === user._id && (
+                <button onClick={() => setShowEdit(true)} className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded mr-4" >
+                  ✏️ Edit
+                </button>
+              )}
+              <button onClick={handleDelete} className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" >
+                Delete Proposal
+              </button>
+              <button onClick={handleCommit} disabled={!proposal.githubUrl} className={`${ proposal.githubUrl ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-600 cursor-not-allowed' } text-white font-bold py-2 px-4 rounded ml-4`} >
+                Commit to GitHub
+              </button>
+            </>
+          )}
         </div>
       </div>
+      <UpdateProposalModal
+        show={showEdit}
+        proposal={proposal}
+        formData={formData}
+        setFormData={setFormData}
+        handleSubmit={handleEditSubmit}
+        onClose={() => setShowEdit(false)}
+      />
     </div>
   );
 };

@@ -35,6 +35,7 @@ function UpdateProposalModal({ show, proposal, onClose }) {
       onClose();
     } catch (err) {
       console.log('ERROR', err);
+      console.log(axiosInstance.defaults.headers);
       toast.error('Failed to update proposal.');
     } finally {
       setSubmitting(false);

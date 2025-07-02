@@ -82,6 +82,17 @@ const projectSchema = mongoose.Schema({
             type: Date,
             default: Date.now
         }
+    }],
+    appliedProposals: [{
+        proposal: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Proposal'
+        },
+        commitSha: String,
+        appliedAt: {
+            type: Date,
+            default: Date.now
+        }
     }]
 }, {timestamps: true});
 

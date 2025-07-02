@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getAllProposals, getProposalById, getUserProposals, createProposal, deleteProposal } = require('../controller/proposalController');
+const { getAllProposals, getProposalById, getUserProposals, createProposal, deleteProposal, updateProposal } = require('../controller/proposalController');
 const { protect } = require('../middleware/authMiddleware');
 
 // GET /api/proposals/user
@@ -14,5 +14,8 @@ router.post('/', protect, createProposal);
 
 // DELETE /api/proposals/:id
 router.delete('/:id', protect, deleteProposal);
+
+// UPDATE /api/proposals/:id
+router.put('/:id', protect, updateProposal);
 
 module.exports = router;

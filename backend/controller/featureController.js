@@ -40,7 +40,8 @@ const createFeature = asyncHandler(async (req, res) => {
     title,
     desc,
     creator: req.user._id,
-    project
+    project,
+    status: 'Active'
   });
 
   // Update project with new feature
@@ -104,10 +105,29 @@ const deleteFeature = asyncHandler(async (req, res) => {
   res.status(200).json({ message: 'Feature deleted successfully', id: feature._id });
 });
 
+// @route   PUT /api/features/:id/complete
+// @desc    Mark a feature as completed
+// @access  Private
+const markFeatureCompleted = asyncHandler(async (req, res) => {
+  const feature = await Feature.findById(req.params.id);
+  if (!feature) {
+    res.status(404);
+    throw new Error('Feature not found');
+  }
+  if (feature.creator.toString() !== req.user._id.toString()) {
+    res.status(401);
+    throw new Error('Not authorized to complete this feature');
+  }
+  feature.status = 'Completed';
+  await feature.save();
+  res.json(feature);
+});
+
 module.exports = {
   getAllFeatures,
   getFeatureById,
   createFeature,
   updateFeature,
-  deleteFeature
+  deleteFeature,
+  markFeatureCompleted
 };

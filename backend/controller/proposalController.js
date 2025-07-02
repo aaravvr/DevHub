@@ -148,7 +148,7 @@ const deleteProposal = asyncHandler(async (req, res) => {
       return res.status(401).json({ message: 'Not authorized' });
     };
 
-    // Remove the proposal from the associated feature
+    // Remove the proposal from feature
     await Feature.findByIdAndUpdate(
       proposal.feature,
       { $pull: { proposals: proposal._id } },
@@ -160,38 +160,48 @@ const deleteProposal = asyncHandler(async (req, res) => {
     res.status(200).json({ message: `Proposal with id ${req.params.id} deleted` });
 });
 
-
-/* 
-
-No update feature for proposals for now
-
-// @route   PUT /api/proposals/:id
-// @desc    Update proposal
+// @route   PATCH /api/proposals/:id
+// @desc    Update a proposal (only while status is Pending)
 // @access  Private
-const updateProposals = asyncHandler(async (req, res) => {
-  const proposal = await Proposal.findById(req.params.id).populate('proposer', 'username full_name role')
+const updateProposal = asyncHandler(async (req, res) => {
+  const proposal = await Proposal.findById(req.params.id).populate('proposer', 'username full_name role');
   if (!proposal) {
-    res.status(400)
-    throw new Error('Proposal not found')
+    res.status(404);
+    throw new Error('Proposal not found');
   }
 
-  if (proposal.proposer._id.toString() !== req.user._id.toString()) {
-    return res.status(401).json({ message: 'Not authorized' });
+  // Only proposer or creator can edit
+  const feature = await Feature.findById(proposal.feature).populate('project', 'creator');
+  const isCreator = req.user._id.toString() === feature.project.creator.toString();
+  const isProposer = req.user._id.toString() === proposal.proposer._id.toString();
+
+  if (!isCreator && !isProposer) {
+    res.status(401);
+    throw new Error('Not authorised to edit this proposal');
   }
 
-  const updatedProposal = await Proposal.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-  }).populate('proposer', 'username full_name role')
+  // Block edits if proposal is accepted
+  if (proposal.status !== 'Pending') {
+    res.status(403);
+    throw new Error('Cannot edit a proposal that has already been finalised');
+  }
 
-  res.status(200).json(updatedProposal);
-})
+  // Only allow to edit some fields
+  const allowed = ['title', 'desc', 'notes', 'mediaUrl', 'githubUrl', 'branchName'];
+  allowed.forEach((field) => {
+    if (req.body[field] !== undefined) {
+      proposal[field] = req.body[field];
+    }
+  });
 
-*/
+  const updated = await proposal.save();
+  res.json(updated);
+});
 
 module.exports = {
   createProposal,
   deleteProposal,
-  //updateProposals,
+  updateProposal,
   getProposalById, 
   getUserProposals,
   getProposalsByFeature
