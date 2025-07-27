@@ -61,6 +61,7 @@ const getRepoBranches = async (req, res) => {
     return res.status(401).json({ message: 'Missing token' });
   }
 
+  // ✅ ADDED VALIDATION
   if (!owner || !repo) {
     return res.status(400).json({ message: 'Owner and repo parameters are required' });
   }
@@ -90,7 +91,6 @@ const commitProposalToBranch = async (req, res) => {
   const proposalId = req.body.proposalId;
   const proposal = await Proposal.findById(proposalId).select('feature');   // { feature: ObjectId }
   if (!proposal) throw new Error('Proposal not found');
-
 
   // Get project repo that we want to commit to
   const feature = await Feature.findById(proposal.feature).populate('project', 'github_repo'); 
