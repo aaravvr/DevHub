@@ -6,7 +6,7 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 
 // Import error handler if server doesn't start properly
-const {errorHandler} = require("./middleware/errorMiddleWare");
+const {errorHandler} = require("./middleware/errorMiddleware");
 
 const { connectDB } = require('./config/db');
 
