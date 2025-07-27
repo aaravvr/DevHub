@@ -3,6 +3,7 @@ const express = require('express');
 const dotenv = require('dotenv').config();
 const cors = require('cors')
 const cookieParser = require('cookie-parser');
+const path = require('path');
 
 // Import error handler if server doesn't start properly
 const {errorHandler} = require("./middleware/errorMiddleWare");
@@ -70,6 +71,20 @@ app.use('/api/proposals', require('./routes/proposalRoutes'));
 app.use('/api/features', require('./routes/featureRoutes'));
 
 app.use('/api/github', require('./routes/githubAuth'));
+
+//serve frontend
+if(process.env.NODE_ENV === 'production') {
+  // Set static folder
+  app.use(express.static(path.join(__dirname, '../frontend/build')))
+
+  app.get('*', (req, res) =>
+     res.sendFile(
+      path.resolve(__dirname, '../', 'frontend', 'build', 'index.html')
+     )
+  )
+} else {
+  app.get('/', (req,res) => res.send('Please set to production'))
+}
 
 app.use(errorHandler);
 
