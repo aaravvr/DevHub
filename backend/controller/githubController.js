@@ -61,6 +61,10 @@ const getRepoBranches = async (req, res) => {
     return res.status(401).json({ message: 'Missing token' });
   }
 
+  if (!owner || !repo) {
+    return res.status(400).json({ message: 'Owner and repo parameters are required' });
+  }
+
   try {
     const response = await axios.get(`https://api.github.com/repos/${owner}/${repo}/branches`, {
       headers: { Authorization: `token ${token}` }
